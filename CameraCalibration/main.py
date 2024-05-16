@@ -10,7 +10,7 @@ directories_to_use = [i for i in range(21)]
 basePath = """../captures/Calib3/c_{0}/"""
 outPathTemplate = """../camera_calibration_out/Calib3/c_{0}/"""
 imgfmt = ".jpg"
-projector_resolution =(1024, 768)
+projector_resolution =(1920, 1080)
 
 all_charco_corners_camera = []
 all_charco_corners_camera_2 = []
