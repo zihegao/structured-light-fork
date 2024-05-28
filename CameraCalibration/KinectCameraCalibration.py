@@ -27,7 +27,7 @@ os.makedirs(save_path, exist_ok=True)
 all_charco_corners = []
 all_charco_ids = []
 
-detectorParams = aruco.DetectorParameters_create()
+detectorParams = aruco.DetectorParameters()
 detectorParams.adaptiveThreshConstant = 5
 detectorParams.adaptiveThreshWinSizeMin = 3
 detectorParams.adaptiveThreshWinSizeMax = 50
@@ -37,11 +37,11 @@ detectorParams.maxMarkerPerimeterRate = 8
 
 TestAurcoDict = aruco.getPredefinedDictionary(aruco.DICT_4X4_250)
 
-def findPointsAndSaveImages(img, img_save_prefex, img_nr):
-    imgName = img_save_prefex+str(img_nr)
+def findPointsAndSaveImages(img, img_save_prefex, iqmg_nr):
+    imgName = img_save_prefex+str(iqmg_nr)
     cv2.imwrite(save_path+imgName+".png", img)
 
-    corners, ids, rejected = aruco.detectMarkers(img, BoardInfo.charucoBoard.dictionary)
+    corners, ids, rejected = aruco.detectMarkers(img, BoardInfo.charucoBoard.getDictionary())
     cimg = aruco.drawDetectedMarkers(img.copy(), corners, ids)
     cv2.imwrite(save_path+"detected__"+imgName+".png", cimg)
 
@@ -58,8 +58,8 @@ def findPointsAndSaveImages(img, img_save_prefex, img_nr):
 
 dev = openni2.Device.open_any()
 
-#image_stream = dev.create_color_stream()
-image_stream = dev.create_ir_stream()
+image_stream = dev.create_color_stream()  #Switch these two for rgb and ir files
+#image_stream = dev.create_ir_stream()
 
 image_stream.start()
 image_frame = image_stream.read_frame()
@@ -102,7 +102,7 @@ rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.
                                                                                                                                                                     image_frame.width), None, None)
 
 
-np.savez("../camera_calibration_out/Kinect_ir_Mtx.npz",
+np.savez("../camera_calibration_out/Kinect_rgb_Mtx.npz",
          retval=rep_err_camera,
          cameraMatrix=mtx_camera,
          distCoeffs=dist_camera)

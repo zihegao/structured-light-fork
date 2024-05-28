@@ -56,7 +56,8 @@ def detect_and_save_markers(rgb_img, ir_img):
         return
     all_charco_corners_camera.append(charucoCorners[selectionArray])
     all_charco_corners_ir.append(charucoCorners_ir[selectionArray_ir])
-    all_real_points.append(BoardInfo.charucoBoard.chessboardCorners[selected_ids])
+    corners = BoardInfo.charucoBoard.getChessboardCorners() #Temporary
+    all_real_points.append(corners[selected_ids])
 
 k=None
 
@@ -90,14 +91,14 @@ while k != ord('q'):
         ir_stream = dev.create_ir_stream()
 
 
-#retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
-#    cv2.stereoCalibrate(all_real_points, all_charco_corners_camera, all_charco_corners_ir,
-#                        rgb_cameraMatrix, rgb_distCoeffs, ir_cameraMatrix,
-#                        ir_distCoeffs, (image_frame.height,image_frame.width), flags=cv2.CALIB_FIX_INTRINSIC)
-retval, cameraMatrix2, distCoeffs2, cameraMatrix1, distCoeffs1, R, T, E, F = \
-    cv2.stereoCalibrate(all_real_points, all_charco_corners_ir, all_charco_corners_camera,
-                        ir_cameraMatrix, ir_distCoeffs, rgb_cameraMatrix, rgb_distCoeffs,
-                        (image_frame.height, image_frame.width), flags=cv2.CALIB_FIX_INTRINSIC)
+retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
+    cv2.stereoCalibrate(all_real_points, all_charco_corners_camera, all_charco_corners_ir,
+                        rgb_cameraMatrix, rgb_distCoeffs, ir_cameraMatrix,
+                        ir_distCoeffs, (image_frame.height,image_frame.width), flags=cv2.CALIB_FIX_INTRINSIC)
+#retval, cameraMatrix2, distCoeffs2, cameraMatrix1, distCoeffs1, R, T, E, F = \
+#    cv2.stereoCalibrate(all_real_points, all_charco_corners_ir, all_charco_corners_camera,
+#                        ir_cameraMatrix, ir_distCoeffs, rgb_cameraMatrix, rgb_distCoeffs,
+#                        (image_frame.height, image_frame.width), flags=cv2.CALIB_FIX_INTRINSIC)
 
 np.savez("../camera_calibration_out/calculated_Kinect_Stereo_matrix.npz",
          retval=retval,

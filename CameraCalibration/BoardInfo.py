@@ -8,7 +8,7 @@ from cv2 import aruco
 #outshape = 2380*4, 3308*4
 
 dpmm = 40
-A4_shape = 216, 297
+A4_shape = 216, 279
 A4_shape_margin = A4_shape[0]-10, A4_shape[1] - 20
 outshape = A4_shape[0]*dpmm, A4_shape[1]*dpmm
 desired_block_size_mm = 20

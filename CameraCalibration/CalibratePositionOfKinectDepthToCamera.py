@@ -9,7 +9,7 @@ import numpy as np
 directories_to_use = [i for i in range(21)]
 basePath = """../captures/Calib3/c_{0}/"""
 outPathTemplate = """../camera_calibration_out/Calib3/c_{0}/"""
-projector_resolution =(1024, 768)
+projector_resolution =(1920, 1080)
 
 all_charco_corners_camera = []
 all_charco_corners_camera_2 = []
@@ -31,11 +31,10 @@ for dirnum in directories_to_use:
         print("Skipping: "+path)
         continue
 
-
-    #corners, ids, rejected = aruco.detectMarkers(img_kinect, BoardInfo.aurcoDict)
-    #cimg = aruco.drawDetectedMarkers(img_kinect.copy(), corners, ids)
-    retval, corners = cv2.findChessboardCorners(img_camera, (10,14))
-    cimg = cv2.drawChessboardCorners(img_camera.copy(), (10,14), corners, True)
+    corners, ids, rejected = aruco.detectMarkers(img_kinect, BoardInfo.aurcoDict)
+    cimg = aruco.drawDetectedMarkers(img_kinect.copy(), corners, ids)
+    retval, corners = cv2.findChessboardCorners(img_camera, (10,13))
+    #cimg = cv2.drawChessboardCorners(img_camera.copy(), (10,13), corners, True)
     print(retval)
     cv2.imshow("tset", cimg)
     cv2.waitKey(0)
