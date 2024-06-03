@@ -3,7 +3,7 @@ from math import ceil
 
 # , width=1920, height=1080
 class GrayImage:
-    def __init__(self, width=1024, height=768):
+    def __init__(self, width=1920, height=1080):
         self.width = width
         self.height = height
         max_dim = max(self.width, self.height)

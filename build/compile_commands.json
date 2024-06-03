@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Coding_Projects/Structured-light-3D-imaging/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -o CMakeFiles\\GrayImageCV.dir\\DecodeGrayImages.cpp.obj -c C:\\Coding_Projects\\Structured-light-3D-imaging\\DecodeGrayImages\\DecodeGrayImages.cpp",
+  "file": "C:\\Coding_Projects\\Structured-light-3D-imaging\\DecodeGrayImages\\DecodeGrayImages.cpp",
+  "output": "CMakeFiles\\GrayImageCV.dir\\DecodeGrayImages.cpp.obj"
+}
+]

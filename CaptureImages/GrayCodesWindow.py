@@ -9,10 +9,13 @@ WINDOW_NAME = "GrayCodesWindow"
 def getImageIteration(firstIteration=True, map1=None, map2=None):
     if firstIteration:
         print("First It")
-        imgToDisplay = cv2.imread("InstructionImg.png", cv2.IMREAD_GRAYSCALE)
+        imgToDisplay = cv2.imread("grayPatturn.png", cv2.IMREAD_GRAYSCALE)
         cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        #cv2.imshow(WINDOW_NAME, imgToDisplay)
+        #cv2.resizeWindow(WINDOW_NAME, imgToDisplay.shape[1], imgToDisplay.shape[0])
+
+        imgToDisplay = gImg.getImage(gImg.num_bits-1)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
-        cv2.resizeWindow(WINDOW_NAME, imgToDisplay.shape[1], imgToDisplay.shape[0])
     else:
         print("Other Its")
         imgToDisplay = np.array([[0]], dtype=np.uint8)

@@ -1,0 +1,3 @@
+C:/Coding_Projects/Structured-light-3D-imaging/build/CMakeFiles/GrayImageCV.dir
+C:/Coding_Projects/Structured-light-3D-imaging/build/CMakeFiles/edit_cache.dir
+C:/Coding_Projects/Structured-light-3D-imaging/build/CMakeFiles/rebuild_cache.dir

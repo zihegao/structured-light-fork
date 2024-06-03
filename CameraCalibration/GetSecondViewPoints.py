@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
-
+    print(f'validH before calling getCameraCoordinates: {validH}')
     charucoCorners[:, 0, [0, 1]] = charucoCorners[:, 0, [1, 0]]
 
     indices = np.indices((47, 47)).reshape(2, -1).T - 23
