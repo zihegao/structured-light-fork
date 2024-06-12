@@ -11,8 +11,8 @@ dpmm = 40
 A4_shape = 216, 279
 A4_shape_margin = A4_shape[0]-10, A4_shape[1] - 20
 outshape = A4_shape[0]*dpmm, A4_shape[1]*dpmm
-desired_block_size_mm = 20
-desired_aurco_size_mm = 14
+desired_block_size_mm = 30
+desired_aurco_size_mm = 21
 desired_gap_size_mm = 5
  
 blocksx = A4_shape[0]//desired_block_size_mm

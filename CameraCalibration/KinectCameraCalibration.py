@@ -58,8 +58,8 @@ def findPointsAndSaveImages(img, img_save_prefex, iqmg_nr):
 
 dev = openni2.Device.open_any()
 
-image_stream = dev.create_color_stream()  #Switch these two for rgb and ir files
-#image_stream = dev.create_ir_stream()
+#image_stream = dev.create_color_stream()  #Switch these two for rgb and ir files
+image_stream = dev.create_ir_stream()
 
 image_stream.start()
 image_frame = image_stream.read_frame()
@@ -102,7 +102,7 @@ rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.
                                                                                                                                                                     image_frame.width), None, None)
 
 
-np.savez("../camera_calibration_out/Kinect_rgb_Mtx.npz",
+np.savez("../camera_calibration_out/Kinect_ir_Mtx.npz",
          retval=rep_err_camera,
          cameraMatrix=mtx_camera,
          distCoeffs=dist_camera)

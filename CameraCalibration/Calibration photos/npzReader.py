@@ -6,9 +6,9 @@ for key in ['retval', 'cameraMatrix1', 'distCoeffs1', 'cameraMatrix2', 'distCoef
  
 """f = np.load("Kinect_ir_Mtx.npz")
 for key in ['retval', 'cameraMatrix', 'distCoeffs']:
-    print(f[key])
+    print(f[key])"""
  
-f = np.load("Kinect_rgb_Mtx.npz")
+"""f = np.load("Kinect_rgb_Mtx.npz")
 for key in ['retval', 'cameraMatrix', 'distCoeffs']:
     print(f[key])"""
  

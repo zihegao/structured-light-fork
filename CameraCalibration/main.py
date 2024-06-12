@@ -6,7 +6,7 @@ import os
 import numpy as np
 
 
-directories_to_use = [i for i in range(21)]
+directories_to_use = [i for i in range(20)]
 basePath = """../captures/Calib3/c_{0}/"""
 outPathTemplate = """../camera_calibration_out/Calib3/c_{0}/"""
 imgfmt = ".jpg"
@@ -61,7 +61,8 @@ for dirnum in directories_to_use:
         continue
 
     all_charco_corners_camera_2.append(new_points_cam)
-    all_real_points.append(BoardInfo.charucoBoard.chessboardCorners[charucoIds[:,0]])
+    all_real_points.append(charucoCorners)
+    #BoardInfo.charucoBoard.getChessboardCorners(charucoIds[:, 0])
 
     print(new_points_projector)
     all_charco_corners_projector.append(new_points_projector)

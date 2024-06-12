@@ -4,11 +4,14 @@ import os
 from subprocess import Popen
 import cv2
 from kinectImageClass import KinectImageClass
+import time
 kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
 
 def capture_and_save_image(file_name):
     # Initialize the camera
-    cap = cv2.VideoCapture(1)  # 0 for the default camera, you can change it if needed
+    cap = cv2.VideoCapture(0)  # 0 for the default camera, you can change it if needed
+
+    time.sleep(3)  # Pause execution for one second
 
     # Check if the camera is opened successfully
     if not cap.isOpened():
@@ -62,7 +65,7 @@ while DoNextIteration:
     currentI += 1
     DoNextIteration = False
     #CamDirOut = BaseOutputDir+SubCaptDir+str(currentI)+"/"
-    CamDirOut = BaseOutputDir+"testcap/"
+    CamDirOut = BaseOutputDir
     for imgnr in getImageIteration(FirstIteration):
         if imgnr == "w":
             kic.capture_image(CamDirOut+"kinect_")
