@@ -5,11 +5,11 @@ import os
 from cv2 import aruco
 import BoardInfo
 
-CalibAtribs = np.load("../camera_calibration_out/Kinect_ir_Mtx.npz")
+CalibAtribs = np.load("./camera_calibration_out/Kinect_ir_Mtx.npz")
 ir_cameraMatrix=CalibAtribs["cameraMatrix"]
 ir_distCoeffs=CalibAtribs["distCoeffs"]
 
-CalibAtribs = np.load("../camera_calibration_out/Kinect_rgb_Mtx.npz")
+CalibAtribs = np.load("./camera_calibration_out/Kinect_rgb_Mtx.npz")
 rgb_cameraMatrix=CalibAtribs["cameraMatrix"]
 rgb_distCoeffs=CalibAtribs["distCoeffs"]
 openni2.initialize("C:\Program Files\OpenNI2\Tools")
@@ -100,7 +100,7 @@ retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
 #                        ir_cameraMatrix, ir_distCoeffs, rgb_cameraMatrix, rgb_distCoeffs,
 #                        (image_frame.height, image_frame.width), flags=cv2.CALIB_FIX_INTRINSIC)
 
-np.savez("../camera_calibration_out/calculated_Kinect_Stereo_matrix.npz",
+np.savez("./camera_calibration_out/calculated_Kinect_Stereo_matrix.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
          distCoeffs1=distCoeffs1,
@@ -110,3 +110,5 @@ np.savez("../camera_calibration_out/calculated_Kinect_Stereo_matrix.npz",
          T=T,
          E=E,
          F=F)
+
+print(R)

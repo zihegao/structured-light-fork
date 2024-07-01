@@ -1,13 +1,15 @@
 import cv2
 import numpy as np
 from open3d import open3d
+import pickle
 
 image_nr=43
 #image_nr=28
-basePath = """../captures/Statue/c_0/"""
+basePath = """./captures/Telephone/c_0/"""
 imgfmt = ".jpg"
-projector_resolution =(1024, 768)
+projector_resolution =(1920, 1080)
 path = basePath.format(image_nr)
+
 
 img = cv2.imread(basePath+"w.jpg")
 validV = cv2.imread(path + "out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
@@ -15,22 +17,33 @@ validH = cv2.imread(path + "out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
 coordsV = cv2.imread(path + "out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH + cv2.IMREAD_GRAYSCALE)
 coordsH = cv2.imread(path + "out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH + cv2.IMREAD_GRAYSCALE)
 
-CalibAtribs = np.load("../camera_calibration_out/calculated_cams_matrix.npz")
-retval=CalibAtribs["retval"]
-cameraMatrix1=CalibAtribs["cameraMatrix1"]
-distCoeffs1=CalibAtribs["distCoeffs1"]
-cameraMatrix2=CalibAtribs["cameraMatrix2"]
-distCoeffs2=CalibAtribs["distCoeffs2"]
-R=CalibAtribs["R"]
-T=CalibAtribs["T"]
-E=CalibAtribs["E"]
-F=CalibAtribs["F"]
-newcameramtx_camera=CalibAtribs["newcameramtx_camera"]
-roi_camera=CalibAtribs["roi_camera"]
-newcameramtx_proj=CalibAtribs["newcameramtx_proj"]
-roi_proj=CalibAtribs["roi_proj"]
-invCamMtx=CalibAtribs["invCamMtx"]
-invProjMtx=CalibAtribs["invProjMtx"]
+calib = open('./camera_calibration_out/calculated_cams_matrix.pkl', 'rb')
+ 
+calibration = pickle.load(calib, encoding= 'latin1')
+cameraMatrix1 = calibration.get('cameraMatrix')
+distCoeffs1 = calibration.get('distCoeffs')
+retval = calibration.get('calibration')
+R = calibration.get('rvecs')
+T = calibration.get('tvecs')
+ 
+calib.close()
+
+#CalibAtribs = np.load("../camera_calibration_out/calculated_cams_matrix.npz")
+#retval=CalibAtribs["retval"]
+#cameraMatrix1=CalibAtribs["cameraMatrix1"]
+#distCoeffs1=CalibAtribs["distCoeffs1"]
+#cameraMatrix2=CalibAtribs["cameraMatrix2"]
+#distCoeffs2=CalibAtribs["distCoeffs2"]
+#R=CalibAtribs["R"]
+#T=CalibAtribs["T"]
+#E=CalibAtribs["E"]
+#F=CalibAtribs["F"]
+#newcameramtx_camera=CalibAtribs["newcameramtx_camera"]
+#roi_camera=CalibAtribs["roi_camera"]
+#newcameramtx_proj=CalibAtribs["newcameramtx_proj"]
+#roi_proj=CalibAtribs["roi_proj"]
+#invCamMtx=CalibAtribs["invCamMtx"]
+#invProjMtx=CalibAtribs["invProjMtx"]
 
 indImg1 = np.indices(coordsH.shape, coordsH.dtype)
 indImg1 = indImg1[:, np.logical_and(validV == 0, validH == 0)]

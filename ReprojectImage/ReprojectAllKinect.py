@@ -6,9 +6,10 @@ import cv2
 import struct
 
 imgfmt = ".jpg"
-baseReadPath = "../captures/"
-datasets = ["Cup", "DragonParty", "Statue", "Punch", "ToyCar"]
+baseReadPath = "./captures/"
+datasets = ["Hand"] #Telephone, WaterBottle
 open_ni_path="C:\Program Files\OpenNI2\Tools"
+captureFolder = "c_0"
 openni2.initialize(open_ni_path)
 
 dev = openni2.Device.open_any()
@@ -32,10 +33,10 @@ for dataset in datasets:
         color_inds = np.clip(np.array(color_inds).reshape(-1, 2), [0, 0], [640 - 1, 480 - 1])
         colors = color_img[color_inds[:, 1], color_inds[:, 0]]
 
-        pcd = open3d.PointCloud()
-        pcd.points = open3d.Vector3dVector(points)
-        pcd.colors = open3d.Vector3dVector(colors)
-        open3d.write_point_cloud(baseReadPath+dataset+"/"+"Kinect__"+captureFolder+".ply", pcd)
+        pcd = open3d.geometry.PointCloud()
+        pcd.points = open3d.utility.Vector3dVector(points)
+        pcd.colors = open3d.utility.Vector3dVector(colors)
+        open3d.io.write_point_cloud(baseReadPath+dataset+"/"+"Kinect__"+captureFolder+".ply", pcd)
 
         with open(baseReadPath+dataset+"/"+"Kinect__"+captureFolder + ".bin", "wb") as fp:
             fp.write(struct.pack("i", len(pcd.points)))

@@ -2,8 +2,8 @@ import os
 import subprocess
 
 imgfmt = ".jpg"
-baseReadPath = "../captures/"
-datasets = ["Cup", "DragonParty", "Statue", "Punch", "ToyCar"]
+baseReadPath = "./captures/"
+datasets = ["Telephone"] #"Cup", "DragonParty", "Statue", "Punch", "ToyCar"
 base_output_path = "../out/octomap/"
 octomap_exe_path = "../Octomap/x64/Debug/Octomap.exe"
 

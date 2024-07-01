@@ -5,9 +5,9 @@ import os
 import struct
 
 imgfmt = ".jpg"
-baseReadPath = "../captures/"
-datasets = ["Cup2", "Calib3", "Cup", "DragonParty", "Statue", "Punch", "ToyCar"]
-CalibAtribs = np.load("../camera_calibration_out/calculated_cams_matrix.npz")
+baseReadPath = "./captures/"
+datasets = ["WaterBottleR"] #Telephone, WaterBottle, Hand
+CalibAtribs = np.load("./camera_calibration_out/calculated_cams_matrix.npz")
 retval=CalibAtribs["retval"]
 cameraMatrix1=CalibAtribs["cameraMatrix1"]
 distCoeffs1=CalibAtribs["distCoeffs1"]
@@ -24,7 +24,7 @@ roi_proj=CalibAtribs["roi_proj"]
 invCamMtx=CalibAtribs["invCamMtx"]
 invProjMtx=CalibAtribs["invProjMtx"]
 
-projector_resolution =(1024, 768)
+projector_resolution =(1920, 1080)
 
 T=T[:,0]
 for dataset in datasets:
@@ -66,22 +66,22 @@ for dataset in datasets:
 
         colors[:,[0,2]]=colors[:,[2,0]]
 
-        pcd = open3d.PointCloud()
-        pcd.points = open3d.Vector3dVector(Pts.T)
-        pcd.colors = open3d.Vector3dVector(colors.astype(np.float64)/255.0)
-        open3d.write_point_cloud(baseReadPath+dataset+"/"+"capturedPointCloud_"+captureFolder + ".ply", pcd)
+        pcd = open3d.geometry.PointCloud()
+        pcd.points = open3d.utility.Vector3dVector(Pts.T)
+        pcd.colors = open3d.utility.Vector3dVector(colors.astype(np.float64)/255.0)
+        open3d.io.write_point_cloud(baseReadPath+dataset+"/"+"capturedPointCloud_"+captureFolder + ".ply", pcd)
 
         with open(baseReadPath+dataset+"/"+"capturedPointCloud_"+captureFolder + ".bin", "wb") as fp:
             fp.write(struct.pack("i", len(Pts.T)))
             for pt in Pts.T:
                 fp.write(struct.pack("i", 3)+struct.pack("d",pt[0])+struct.pack("d",pt[1])+struct.pack("d",pt[2]))
 
-        downpcd = open3d.voxel_down_sample(pcd, voxel_size=0.5)
+        downpcd = pcd.voxel_down_sample(voxel_size=0.5)
         #downpcd, ind = open3d.statistical_outlier_removal(downpcd,
         #                                             nb_neighbors=30, std_ratio=3)
         #downpcd = open3d.voxel_down_sample(cl, voxel_size=0.2)
 
-        open3d.write_point_cloud(baseReadPath+dataset+"/"+"downsampled_capturedPointCloud_"+captureFolder + ".ply", downpcd)
+        open3d.io.write_point_cloud(baseReadPath+dataset+"/"+"downsampled_capturedPointCloud_"+captureFolder + ".ply", downpcd)
 
         with open(baseReadPath+dataset+"/"+"downsampled_capturedPointCloud_"+captureFolder + ".bin", "wb") as fp:
             fp.write(struct.pack("i", len(downpcd.points)))
@@ -96,10 +96,10 @@ for dataset in datasets:
                                                    np.logical_and(pts_hold[:, 1] < 160, pts_hold[:, 1] > -350)))
         pts_hold = pts_hold[filterLocs]
         colors_hold = colors_hold[filterLocs]
-        pcd = open3d.PointCloud()
-        pcd.points = open3d.Vector3dVector(pts_hold)
-        pcd.colors = open3d.Vector3dVector(colors_hold)
-        open3d.write_point_cloud(baseReadPath + dataset + "/" + "filtered__capturedPointCloud__" + captureFolder + ".ply", pcd)
+        pcd = open3d.geometry.PointCloud()
+        pcd.points = open3d.utility.Vector3dVector(pts_hold)
+        pcd.colors = open3d.utility.Vector3dVector(colors_hold)
+        open3d.io.write_point_cloud(baseReadPath + dataset + "/" + "filtered__capturedPointCloud__" + captureFolder + ".ply", pcd)
 
         with open(baseReadPath + dataset + "/" + "filtered__capturedPointCloud__" + captureFolder + ".bin", "wb") as fp:
             fp.write(struct.pack("i", len(pcd.points)))

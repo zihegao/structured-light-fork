@@ -6,9 +6,9 @@ import os
 import numpy as np
 
 
-directories_to_use = [i for i in range(20)]
-basePath = """../captures/Calib3/c_{0}/"""
-outPathTemplate = """../camera_calibration_out/Calib3/c_{0}/"""
+directories_to_use = [i for i in range(6)]
+basePath = """./captures/Calib3/c_{0}/"""
+outPathTemplate = """./camera_calibration_out/Calib3/c_{0}/"""
 imgfmt = ".jpg"
 projector_resolution =(1920, 1080)
 
@@ -61,8 +61,11 @@ for dirnum in directories_to_use:
         continue
 
     all_charco_corners_camera_2.append(new_points_cam)
-    all_real_points.append(charucoCorners)
-    #BoardInfo.charucoBoard.getChessboardCorners(charucoIds[:, 0])
+    print(charucoIds[:, 0])
+    all_real_points.append(BoardInfo.charucoBoard.getChessboardCorners())
+    print(all_real_points)
+
+
 
     print(new_points_projector)
     all_charco_corners_projector.append(new_points_projector)
@@ -89,7 +92,7 @@ invCamMtx = np.linalg.inv(newcameramtx_camera)
 invProjMtx = np.linalg.inv(newcameramtx_proj)
 
 
-np.savez("../camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
+np.savez("./camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
          distCoeffs1=distCoeffs1,
@@ -110,7 +113,6 @@ np.savez("../camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
 rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charco_corners_camera, all_charco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None)
 rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, BoardInfo.charucoBoard, projector_resolution, None, None)
 
-
 retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
     cv2.stereoCalibrate(all_real_points, all_charco_corners_camera_2, all_charco_corners_projector,
                         mtx_camera, dist_camera, mtx_proj,
@@ -123,7 +125,7 @@ invCamMtx = np.linalg.inv(newcameramtx_camera)
 invProjMtx = np.linalg.inv(newcameramtx_proj)
 
 
-np.savez("../camera_calibration_out/calculated_cams_matrix.npz",
+np.savez("./camera_calibration_out/calculated_cams_matrix.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
          distCoeffs1=distCoeffs1,
