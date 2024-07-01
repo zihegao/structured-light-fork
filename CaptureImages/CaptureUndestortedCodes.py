@@ -12,6 +12,16 @@ cameraMatrix = calib['cameraMatrix2']
 distCoeffs = calib['distCoeffs2']
 R = calib['R2']
 newCameraMatrix = calib['P2']
+
+f = open('./calibration.pckl', 'wb')
+
+calibration = pickle.load(f)
+cameraMatrix = calibration.cameraMatrix
+distCoeffs = calibration.distCoeffs
+
+f.close()
+    
+
 gi = GrayImage()
 map1, map2 = cv2.initUndistortRectifyMap(cameraMatrix, distCoeffs, np.eye(3), cameraMatrix, (gi.width, gi.height), cv2.CV_16SC2)
 
