@@ -17,6 +17,7 @@ def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
                                                                             surroundingPoints[:, 0] >= 0),
                                                              np.logical_and(surroundingPoints[:, 1] < img.shape[1],
                                                                             surroundingPoints[:, 1] >= 0))]
+        print(validV)
         isValid = np.logical_and(validV[surroundingPoints[:, 0], surroundingPoints[:, 1]] == 0,
                                  validH[surroundingPoints[:, 0], surroundingPoints[:, 1]] == 0)
         surroundingPoints = surroundingPoints[isValid]
@@ -28,9 +29,13 @@ def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
             valid_points.append(True)
             projector_points = np.stack((projector_points_u, projector_points_v), axis=1)
             surroundingPoints[:,[0,1]]=surroundingPoints[:,[1,0]]
+
+            print(f"Number of surroundingPoints: {len(surroundingPoints)}")
+            print(f"Number of projector_points: {len(projector_points)}")
+
             H, mask = cv2.findHomography(surroundingPoints, projector_points, ransacReprojThreshold=2, maxIters=100000, method = cv2.FM_LMEDS, confidence=0.99)
-            #print(H)
-            #print(H is None)
+            print(H)
+            print(H is None)
             pt2 = np.dot(H, [pt[0,1], pt[0,0], 1.0])
             pt2 /= pt2[2]
             #print(pt2, coordsH[int(pt[0,0]), int(pt[0,1])], coordsV[int(pt[0,0]), int(pt[0,1])] )

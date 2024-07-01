@@ -5,7 +5,7 @@ import os
 from cv2 import aruco
 import BoardInfo
 
-base_storage_path = "../camera_calibration_out/Kinect"
+base_storage_path = "./camera_calibration_out/Kinect"
 second_dir = "calibImages_"
 openni2.initialize("C:\Program Files\OpenNI2\Tools")
 
@@ -58,8 +58,8 @@ def findPointsAndSaveImages(img, img_save_prefex, iqmg_nr):
 
 dev = openni2.Device.open_any()
 
-image_stream = dev.create_color_stream()  #Switch these two for rgb and ir files
-#image_stream = dev.create_ir_stream()
+#image_stream = dev.create_color_stream()  #Switch these two for rgb and ir files
+image_stream = dev.create_ir_stream()
 
 image_stream.start()
 image_frame = image_stream.read_frame()
@@ -87,7 +87,7 @@ while k != ord('q'):
         if k == ord('n'):
             continue
 
-        rgb_img, rgb_corners, rgb_ids = findPointsAndSaveImages(image_to_process, "rgb__", captureNum)
+        rgb_img, rgb_corners, rgb_ids = findPointsAndSaveImages(image_to_process, "ir__", captureNum)
         if rgb_corners is not None and rgb_ids is not None:
             all_charco_corners.append(rgb_corners)
             all_charco_ids.append(rgb_ids)
@@ -102,7 +102,7 @@ rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.
                                                                                                                                                                     image_frame.width), None, None)
 
 
-np.savez("../camera_calibration_out/Kinect_rgb_Mtx.npz",
+np.savez("./camera_calibration_out/Kinect_ir_Mtx.npz",
          retval=rep_err_camera,
          cameraMatrix=mtx_camera,
          distCoeffs=dist_camera)

@@ -1,5 +1,5 @@
 from GrayCodesWindow import getImageIteration, destroyW
-from CaptureImage import SaveImage
+from CaptureImage import SaveImage, capture_and_save_image
 import os
 from subprocess import Popen
 import cv2
@@ -12,22 +12,12 @@ cameraMatrix = calib['cameraMatrix2']
 distCoeffs = calib['distCoeffs2']
 R = calib['R2']
 newCameraMatrix = calib['P2']
-
-f = open('./calibration.pckl', 'wb')
-
-calibration = pickle.load(f)
-cameraMatrix = calibration.cameraMatrix
-distCoeffs = calibration.distCoeffs
-
-f.close()
-    
-
 gi = GrayImage()
 map1, map2 = cv2.initUndistortRectifyMap(cameraMatrix, distCoeffs, np.eye(3), cameraMatrix, (gi.width, gi.height), cv2.CV_16SC2)
 
 
 DETACHED_PROCESS = 0x00000008
-BaseOutputDir = "../captures/"
+BaseOutputDir = "./captures/"
 SubCaptDir = "c_"
 SaveFormat = ".jpg"
 
@@ -50,7 +40,7 @@ while DoNextIteration:
     DoNextIteration = False
     CamDirOut = BaseOutputDir+SubCaptDir+str(currentI)+"/"
     for imgnr in getImageIteration(FirstIteration, map1, map2):
-        SaveImage(CamDirOut+imgnr+SaveFormat)
+        capture_and_save_image(CamDirOut+imgnr+SaveFormat)
         cv2.waitKey(1000)
         DoNextIteration=True
     if DoNextIteration:
