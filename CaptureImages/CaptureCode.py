@@ -1,6 +1,7 @@
 from GrayCodesWindow import getImageIteration, destroyW
 from CaptureImage import SaveImage, capture_and_save_image
 import os
+import numpy
 from subprocess import Popen
 import cv2
 from kinectImageClass import KinectImageClass
@@ -59,7 +60,7 @@ while DoNextIteration:
         imlist_posi_pat = phaseshifting.generate((width, height))
         imlist_nega_pat = sl.invert(imlist_posi_pat)
 
-        imgToDisplay = cv2.imread("InstructionImg.png", cv2.IMREAD_GRAYSCALE)
+        imgToDisplay = np.zeros((768, 1024), dtype = np.uint8)
         cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
         cv2.waitKey(0)
