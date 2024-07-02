@@ -67,7 +67,6 @@ while DoNextIteration:
 
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
-        cv2.waitKey(0)
 
         # Capture
         i = 0
