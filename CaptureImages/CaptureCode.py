@@ -83,6 +83,8 @@ while DoNextIteration:
         i=0
         for img in imlist_posi_pat:
             cv2.imwrite("w_%d." % (i) + SaveFormat, img)
+            print(f"Image captured and saved as {"w_%d." % (i) + SaveFormat}.")
+
             i+= 1
 
 
