@@ -12,6 +12,7 @@ DETACHED_PROCESS = 0x00000008
 BaseOutputDirBeforeNew = "./captures/"
 SubCaptDir = "c_"
 SaveFormat = ".jpg"
+WINDOW_NAME="phaseshift"
 
 #Capture Path: testcap
 GrayCodeConverterPath = "../DecodeGrayImages/DecodeGrayImages"
@@ -30,11 +31,15 @@ if os.path.isdir(BaseOutputDir):
                 pass
 DoNextIteration = True
 FirstIteration = True
+
+PhaseShift = True
+
 while DoNextIteration:
     currentI += 1
     DoNextIteration = False
     #CamDirOut = BaseOutputDir+SubCaptDir+str(currentI)+"/"
     CamDirOut = BaseOutputDir
+    
     for imgnr in getImageIteration(FirstIteration):
         if imgnr == "w":
             kic.capture_image(CamDirOut+"kinect_")
@@ -42,6 +47,28 @@ while DoNextIteration:
         capture_and_save_image(CamDirOut+imgnr+SaveFormat)
 
         DoNextIteration=True
+
+    if PhaseShift is True:
+        gray = sl.Gray()
+        # Generate and Decode x-coord
+        # Generate
+        imlist_posi_pat = gray.generate((width, height))
+        imlist_nega_pat = sl.invert(imlist_posi_pat)
+
+        imgToDisplay = cv2.imread("InstructionImg.png", cv2.IMREAD_GRAYSCALE)
+        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        cv2.imshow(WINDOW_NAME, imgToDisplay)
+        cv2.waitKey(0)
+
+        cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        cv2.imshow(WINDOW_NAME, imgToDisplay)
+        cv2.waitKey(0)
+
+        # Capture
+        for img in imlist_posi_pat
+            cv2.imshow(WINDOW_NAME, img)
+            capture_and_save_image(CamDirOut+imgnr+SaveFormat)
+
     if DoNextIteration:
         Popen(["python3 ConvertRawImage.py "+CamDirOut +" "+ SaveFormat +" "+ GrayCodeConverterPath], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
     FirstIteration=False
