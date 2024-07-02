@@ -9,13 +9,20 @@ import time
 kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
 import structuredlight as sl
 
-
-
 DETACHED_PROCESS = 0x00000008 
 BaseOutputDirBeforeNew = "./captures/"
 SubCaptDir = "c_"
 SaveFormat = ".jpg"
 WINDOW_NAME="phaseshift"
+
+
+def imShowAndCapture(cap, img_pattern, delay=250):
+    cv2.imshow(WINDOW_NAME, img_pattern)
+    cv2.waitKey(delay)
+    ret, img_frame = cap.read()
+    img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)
+    return img_gray
+
 
 #Capture Path: testcap
 GrayCodeConverterPath = "../DecodeGrayImages/DecodeGrayImages"
@@ -55,6 +62,7 @@ while DoNextIteration:
             DoNextIteration=True
 
     if PhaseShift is True:
+        cap = cv2.VideoCapture(0)
         phaseshifting = sl.PhaseShifting(num=3)
         # Generate and Decode x-coord
         # Generate
@@ -70,19 +78,7 @@ while DoNextIteration:
         cv2.imshow(WINDOW_NAME, imgToDisplay)
 
         # Capture
-        i = 0
-        for img in imlist_posi_pat:
-            i+=1
-            cv2.imshow(WINDOW_NAME, img)
-            capture_and_save_image(CamDirOut+"w"+str(i)+SaveFormat)
-
-        imshowAndCapture(cap, img_pattern, delay=250):
-        cv2.imshow("", img_pattern)
-        cv2.waitKey(delay)
-        ret, img_frame = cap.read()
-        img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)
-        return img_gray
-        
+        imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]   
 
     if DoNextIteration:
         Popen(["python3 ConvertRawImage.py "+CamDirOut +" "+ SaveFormat +" "+ GrayCodeConverterPath], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
