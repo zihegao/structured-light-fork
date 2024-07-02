@@ -77,6 +77,12 @@ while DoNextIteration:
             cv2.imshow(WINDOW_NAME, img)
             capture_and_save_image(CamDirOut+"w"+str(i)+SaveFormat)
 
+        imshowAndCapture(cap, img_pattern, delay=250):
+        cv2.imshow("", img_pattern)
+        cv2.waitKey(delay)
+        ret, img_frame = cap.read()
+        img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)
+        return img_gray
         
 
     if DoNextIteration:
