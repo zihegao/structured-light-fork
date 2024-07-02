@@ -70,9 +70,13 @@ while DoNextIteration:
         cv2.waitKey(0)
 
         # Capture
+        i = 0
         for img in imlist_posi_pat:
+            i+=1
             cv2.imshow(WINDOW_NAME, img)
-            capture_and_save_image(CamDirOut+imgnr+SaveFormat)
+            capture_and_save_image(CamDirOut+"w"+str(i)+SaveFormat)
+
+        
 
     if DoNextIteration:
         Popen(["python3 ConvertRawImage.py "+CamDirOut +" "+ SaveFormat +" "+ GrayCodeConverterPath], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
