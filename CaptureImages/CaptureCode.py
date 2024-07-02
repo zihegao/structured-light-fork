@@ -1,13 +1,14 @@
 from GrayCodesWindow import getImageIteration, destroyW
 from CaptureImage import SaveImage, capture_and_save_image
 import os
-import numpy
+import numpy as np
 from subprocess import Popen
 import cv2
 from kinectImageClass import KinectImageClass
 import time
 kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
 import structuredlight as sl
+
 
 
 DETACHED_PROCESS = 0x00000008 
@@ -75,6 +76,12 @@ while DoNextIteration:
             cv2.imshow(WINDOW_NAME, img)
             capture_and_save_image(CamDirOut+"w"+str(i)+SaveFormat)
 
+        imshowAndCapture(cap, img_pattern, delay=250):
+        cv2.imshow("", img_pattern)
+        cv2.waitKey(delay)
+        ret, img_frame = cap.read()
+        img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)
+        return img_gray
         
 
     if DoNextIteration:
