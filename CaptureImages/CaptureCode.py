@@ -43,13 +43,14 @@ while DoNextIteration:
     #CamDirOut = BaseOutputDir+SubCaptDir+str(currentI)+"/"
     CamDirOut = BaseOutputDir
     
-    for imgnr in getImageIteration(FirstIteration):
-        if imgnr == "w":
-            kic.capture_image(CamDirOut+"kinect_")
-        #SaveImage(CamDirOut+imgnr+SaveFormat)
-        capture_and_save_image(CamDirOut+imgnr+SaveFormat)
+    if PhaseShift is False:
+        for imgnr in getImageIteration(FirstIteration):
+            if imgnr == "w":
+                kic.capture_image(CamDirOut+"kinect_")
+            #SaveImage(CamDirOut+imgnr+SaveFormat)
+            capture_and_save_image(CamDirOut+imgnr+SaveFormat)
 
-        DoNextIteration=True
+            DoNextIteration=True
 
     if PhaseShift is True:
         phaseshifting = sl.PhaseShifting(num=3)
