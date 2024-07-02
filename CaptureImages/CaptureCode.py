@@ -6,6 +6,7 @@ import cv2
 from kinectImageClass import KinectImageClass
 import time
 kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
+import structuredlight as sl
 
 
 DETACHED_PROCESS = 0x00000008 
@@ -18,6 +19,8 @@ WINDOW_NAME="phaseshift"
 GrayCodeConverterPath = "../DecodeGrayImages/DecodeGrayImages"
 cFolder = input("Enter capture folder: ") 
 BaseOutputDir = BaseOutputDirBeforeNew +cFolder+"/"
+width = 1920
+height = 1080
 
 currentI = -1
 if os.path.isdir(BaseOutputDir):
@@ -49,10 +52,10 @@ while DoNextIteration:
         DoNextIteration=True
 
     if PhaseShift is True:
-        gray = sl.Gray()
+        phaseshifting = sl.PhaseShifting(num=3)
         # Generate and Decode x-coord
         # Generate
-        imlist_posi_pat = gray.generate((width, height))
+        imlist_posi_pat = phaseshifting.generate((width, height))
         imlist_nega_pat = sl.invert(imlist_posi_pat)
 
         imgToDisplay = cv2.imread("InstructionImg.png", cv2.IMREAD_GRAYSCALE)
@@ -65,7 +68,7 @@ while DoNextIteration:
         cv2.waitKey(0)
 
         # Capture
-        for img in imlist_posi_pat
+        for img in imlist_posi_pat:
             cv2.imshow(WINDOW_NAME, img)
             capture_and_save_image(CamDirOut+imgnr+SaveFormat)
 

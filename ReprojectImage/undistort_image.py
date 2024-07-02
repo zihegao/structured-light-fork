@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("./captures/c_1/w.jpg")
+img = cv2.imread("../captures/c_1/w.jpg")
 
 CalibAtribs = np.load("./camera_calibration_out/calculated_cams_matrix.npz")
 retval=CalibAtribs["retval"]
