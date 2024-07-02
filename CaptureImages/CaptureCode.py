@@ -63,6 +63,7 @@ while DoNextIteration:
 
     if PhaseShift is True:
         cap = cv2.VideoCapture(0)
+        testcap = cap.read()
         phaseshifting = sl.PhaseShifting(num=3)
         # Generate and Decode x-coord
         # Generate
@@ -78,12 +79,13 @@ while DoNextIteration:
         cv2.imshow(WINDOW_NAME, imgToDisplay)
 
         # Capture
+        imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]
         imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]   
+   
         i=0
         for img in imlist_posi_pat:
-            cv2.imwrite("w_%d." % (i) + SaveFormat, img)
-            print(f"Image captured and saved as {"w_%d." % (i) + SaveFormat}.")
-
+            cv2.imwrite("w_%d" % (i) + SaveFormat, img)
+            print(f"Image saved as {"w_%d" % (i) + SaveFormat}.")
             i+= 1
 
 
