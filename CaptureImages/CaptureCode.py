@@ -1,13 +1,14 @@
 from GrayCodesWindow import getImageIteration, destroyW
 from CaptureImage import SaveImage, capture_and_save_image
 import os
-import numpy
+import numpy as np
 from subprocess import Popen
 import cv2
 from kinectImageClass import KinectImageClass
 import time
 kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
 import structuredlight as sl
+
 
 
 DETACHED_PROCESS = 0x00000008 
@@ -72,7 +73,7 @@ while DoNextIteration:
         # Capture
         for img in imlist_posi_pat:
             cv2.imshow(WINDOW_NAME, img)
-            capture_and_save_image(CamDirOut+imgnr+SaveFormat)
+            capture_and_save_image(CamDirOut+"w"+SaveFormat)
 
     if DoNextIteration:
         Popen(["python3 ConvertRawImage.py "+CamDirOut +" "+ SaveFormat +" "+ GrayCodeConverterPath], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
