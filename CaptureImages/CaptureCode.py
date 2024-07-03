@@ -23,6 +23,11 @@ def imShowAndCapture(cap, img_pattern, delay=250):
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
 
+def SaveImageCV(images, filename, SaveFormat):
+            i=0
+            for img in images:
+                cv2.imwrite(filename + "_" + str(i) + SaveFormat, img)
+                i+= 1
 
 #Capture Path: testcap
 GrayCodeConverterPath = "../DecodeGrayImages/DecodeGrayImages"
@@ -63,12 +68,13 @@ while DoNextIteration:
 
     if PhaseShift is True:
         cap = cv2.VideoCapture(0)
+        #takes image to wake camera
         testcap = cap.read()
         phaseshifting = sl.PhaseShifting(num=3)
         # Generate and Decode x-coord
         # Generate
-        imlist_posi_pat = phaseshifting.generate((width, height))
-        imlist_nega_pat = sl.invert(imlist_posi_pat)
+        imlist_posi_x_pat = phaseshifting.generate((width, height))
+        imlist_nega_x_pat = sl.invert(imlist_posi_x_pat)
 
         imgToDisplay = np.zeros((768, 1024), dtype = np.uint8)
         cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
@@ -79,14 +85,24 @@ while DoNextIteration:
         cv2.imshow(WINDOW_NAME, imgToDisplay)
 
         # Capture
-        imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]
-        imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]   
-   
-        i=0
-        for img in imlist_posi_pat:
-            cv2.imwrite("w_%d" % (i) + SaveFormat, img)
-            print(f"Image saved as {"w_%d" % (i) + SaveFormat}.")
-            i+= 1
+        imlist_posi_x_cap = [imShowAndCapture(cap, img) for img in imlist_posi_x_pat]
+        imlist_nega_x_cap = [imShowAndCapture(cap, img) for img in imlist_nega_x_pat]   
+    
+        
+        imlist = phaseshifting.generate((height, width))
+        imlist_posi_y_pat = sl.transpose(imlist)
+        imlist_nega_y_pat = sl.invert(imlist_posi_y_pat)
+
+        imlist_posi_y_cap = [ imShowAndCapture(cap, img) for img in imlist_posi_y_pat]
+        imlist_nega_y_cap = [ imShowAndCapture(cap, img) for img in imlist_nega_y_pat]
+
+        SaveImageCV(imlist_posi_x_cap, "h", SaveFormat)
+        SaveImageCV(imlist_nega_x_cap, "ih", SaveFormat)
+        SaveImageCV(imlist_posi_y_cap, "v", SaveFormat)
+        SaveImageCV(imlist_nega_y_cap, "iv", SaveFormat)
+
+
+        
 
 
     if DoNextIteration:
