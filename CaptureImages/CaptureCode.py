@@ -18,11 +18,7 @@ WINDOW_NAME="phaseshift"
 
 def imShowAndCapture(cap, img_pattern, delay=1000):
     cv2.imshow(WINDOW_NAME, img_pattern)
-<<<<<<< HEAD
-    cv2.waitKey(0)
-=======
-    cv2.delay(250)
->>>>>>> a997c1465265ab7a8e28cf0066389b9ded0d3f5d
+    cv2.waitKey(delay)
     ret, img_frame = cap.read()
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
