@@ -10,7 +10,7 @@ kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
 import structuredlight as sl
 
 DETACHED_PROCESS = 0x00000008 
-BaseOutputDirBeforeNew = "./captures/"
+BaseOutputDirBeforeNew = "/captures/"
 SubCaptDir = "c_"
 SaveFormat = ".jpg"
 WINDOW_NAME="phaseshift"
@@ -19,7 +19,7 @@ WINDOW_NAME="phaseshift"
 def imShowAndCapture(cap, img_pattern, delay=250):
     cv2.imshow(WINDOW_NAME, img_pattern)
     cv2.waitKey(delay)
-    time.sleep(7)
+    time.sleep(2)
     ret, img_frame = cap.read()
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
@@ -64,6 +64,7 @@ while DoNextIteration:
 
     if PhaseShift is True:
         cap = cv2.VideoCapture(0)
+        testcap = cap.read()
         phaseshifting = sl.PhaseShifting(num=3)
         # Generate and Decode x-coord
         # Generate
@@ -80,9 +81,11 @@ while DoNextIteration:
 
         # Capture
         imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]
+   
         i=0
         for img in imlist_posi_pat:
             cv2.imwrite("w_%d" % (i) + SaveFormat, img)
+            #print(f"Image saved as {"w_%d" % (i) + SaveFormat}.")
             i+= 1
 
 
