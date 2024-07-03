@@ -18,7 +18,7 @@ WINDOW_NAME="phaseshift"
 
 def imShowAndCapture(cap, img_pattern, delay=1000):
     cv2.imshow(WINDOW_NAME, img_pattern)
-    cv2.waitKey(delay)
+    cv2.waitKey(0)
     ret, img_frame = cap.read()
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
@@ -76,16 +76,20 @@ while DoNextIteration:
         imlist_posi_x_pat = phaseshifting.generate((width, height))
         imlist_nega_x_pat = sl.invert(imlist_posi_x_pat)
 
-        imgToDisplay = np.zeros((768, 1024), dtype = np.uint8)
+        imgToDisplay = np.zeros((width, height), dtype = np.uint8)
         cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
         cv2.waitKey(0)
 
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
-        imlist_b_cap = [imShowAndCapture(cap, imgToDisplay)]
+
+        imlist_b_img = imShowAndCapture(cap, imgToDisplay)
+        cv2.imwrite(BaseOutputDir + "b" + SaveFormat, imlist_b_img) 
         imgToDisplay[:,:] = 255
-        imlist_w_cap = [imShowAndCapture(cap, imgToDisplay)]
+        imlist_w_img = imShowAndCapture(cap, imgToDisplay)
+        cv2.imwrite(BaseOutputDir + "w" + SaveFormat, imlist_w_img) 
+
 
         # Capture
         imlist_posi_x_cap = [imShowAndCapture(cap, img) for img in imlist_posi_x_pat]
@@ -103,8 +107,6 @@ while DoNextIteration:
         SaveImageCV(imlist_nega_x_cap, BaseOutputDir + "ih", SaveFormat)
         SaveImageCV(imlist_posi_y_cap, BaseOutputDir + "v", SaveFormat)
         SaveImageCV(imlist_nega_y_cap, BaseOutputDir + "iv", SaveFormat)
-        SaveImageCV(imlist_w_cap, BaseOutputDir + "w", SaveFormat)
-        SaveImageCV(imlist_b_cap, BaseOutputDir + "b", SaveFormat)
 
 
 
