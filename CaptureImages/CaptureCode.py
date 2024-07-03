@@ -86,15 +86,6 @@ while DoNextIteration:
         cv2.imshow(WINDOW_NAME, imgToDisplay)
 
         # Capture
-<<<<<<< HEAD
-        imlist_posi_pat = [imShowAndCapture(cap, img) for img in imlist_posi_pat]
-   
-        i=0
-        for img in imlist_posi_pat:
-            cv2.imwrite("w_%d" % (i) + SaveFormat, img)
-            #print(f"Image saved as {"w_%d" % (i) + SaveFormat}.")
-            i+= 1
-=======
         imlist_posi_x_cap = [imShowAndCapture(cap, img) for img in imlist_posi_x_pat]
         imlist_nega_x_cap = [imShowAndCapture(cap, img) for img in imlist_nega_x_pat]   
     
@@ -113,7 +104,6 @@ while DoNextIteration:
 
 
         
->>>>>>> 52fa9bb9fc68a403605ee7be18a3e5bde9e0a6f7
 
 
     if DoNextIteration:
