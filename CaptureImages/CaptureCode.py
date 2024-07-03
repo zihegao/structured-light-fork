@@ -18,7 +18,7 @@ WINDOW_NAME="phaseshift"
 
 def imShowAndCapture(cap, img_pattern, delay=1000):
     cv2.imshow(WINDOW_NAME, img_pattern)
-    cv2.delay(delay)
+    cv2.waitKey(delay)
     ret, img_frame = cap.read()
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
@@ -70,10 +70,10 @@ while DoNextIteration:
         cap = cv2.VideoCapture(0)
         #takes image to wake camera
         testcap = cap.read()
-        phaseshifting = sl.PhaseShifting(num=3)
+        ps = sl.PhaseShifting(num=3)
         # Generate and Decode x-coord
         # Generate
-        imlist_posi_x_pat = phaseshifting.generate((width, height))
+        imlist_posi_x_pat = ps.generate((width, height))
         imlist_nega_x_pat = sl.invert(imlist_posi_x_pat)
 
         imgToDisplay = np.zeros((height, width), dtype = np.uint8)
@@ -98,7 +98,7 @@ while DoNextIteration:
         imlist_nega_x_cap = [imShowAndCapture(cap, img) for img in imlist_nega_x_pat]   
     
         
-        imlist = phaseshifting.generate((height, width))
+        imlist = ps.generate((height, width))
         imlist_posi_y_pat = sl.transpose(imlist)
         imlist_nega_y_pat = sl.invert(imlist_posi_y_pat)
 
@@ -110,7 +110,25 @@ while DoNextIteration:
         SaveImageCV(imlist_posi_y_cap, BaseOutputDir + "v", SaveFormat)
         SaveImageCV(imlist_nega_y_cap, BaseOutputDir + "iv", SaveFormat)
 
+        img_index_x = ps.decode(imlist_posi_x_cap)
+        img_index_y = ps.decode(imlist_posi_y_cap)
 
+        campoints, prjpoints = sl.getCorrespondencePoints(img_index_x, img_index_y)
+        print("xy-coord only")
+        print("campoints: ", campoints.shape)
+        print(campoints)
+        print("prjpoints: ", prjpoints.shape)
+        print(prjpoints)
+
+
+
+        img_correspondence = cv2.merge([0.0*np.zeros_like(img_index_x), img_index_x/width, img_index_y/height])
+        img_correspondence = np.clip(img_correspondence*255.0, 0, 255).astype(np.uint8)
+        cv2.imshow("x:Green, y:Red", img_correspondence)
+        cv2.waitKey(0)
+        cv2.imwrite("correspondence.png", img_correspondence)
+        cv2.destroyAllWindows()
+        cap.release()
 
         
 
