@@ -10,16 +10,15 @@ kic = KinectImageClass("C:/Program Files/OpenNI2/Samples/Bin")
 import structuredlight as sl
 
 DETACHED_PROCESS = 0x00000008 
-BaseOutputDirBeforeNew = "/captures/"
+BaseOutputDirBeforeNew = "./captures/"
 SubCaptDir = "c_"
 SaveFormat = ".jpg"
 WINDOW_NAME="phaseshift"
 
 
-def imShowAndCapture(cap, img_pattern, delay=250):
+def imShowAndCapture(cap, img_pattern, delay=1000):
     cv2.imshow(WINDOW_NAME, img_pattern)
     cv2.waitKey(delay)
-    time.sleep(2)
     ret, img_frame = cap.read()
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
@@ -27,7 +26,7 @@ def imShowAndCapture(cap, img_pattern, delay=250):
 def SaveImageCV(images, filename, SaveFormat):
             i=0
             for img in images:
-                cv2.imwrite(filename + "_" + str(i) + SaveFormat, img)
+                cv2.imwrite(filename + str(i) + SaveFormat, img)
                 i+= 1
 
 #Capture Path: testcap
@@ -84,6 +83,9 @@ while DoNextIteration:
 
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
+        imlist_b_cap = [imShowAndCapture(cap, imgToDisplay)]
+        imgToDisplay[:,:] = 255
+        imlist_w_cap = [imShowAndCapture(cap, imgToDisplay)]
 
         # Capture
         imlist_posi_x_cap = [imShowAndCapture(cap, img) for img in imlist_posi_x_pat]
@@ -97,10 +99,13 @@ while DoNextIteration:
         imlist_posi_y_cap = [ imShowAndCapture(cap, img) for img in imlist_posi_y_pat]
         imlist_nega_y_cap = [ imShowAndCapture(cap, img) for img in imlist_nega_y_pat]
 
-        SaveImageCV(imlist_posi_x_cap, "h", SaveFormat)
-        SaveImageCV(imlist_nega_x_cap, "ih", SaveFormat)
-        SaveImageCV(imlist_posi_y_cap, "v", SaveFormat)
-        SaveImageCV(imlist_nega_y_cap, "iv", SaveFormat)
+        SaveImageCV(imlist_posi_x_cap, BaseOutputDir + "h", SaveFormat)
+        SaveImageCV(imlist_nega_x_cap, BaseOutputDir + "ih", SaveFormat)
+        SaveImageCV(imlist_posi_y_cap, BaseOutputDir + "v", SaveFormat)
+        SaveImageCV(imlist_nega_y_cap, BaseOutputDir + "iv", SaveFormat)
+        SaveImageCV(imlist_w_cap, BaseOutputDir + "w", SaveFormat)
+        SaveImageCV(imlist_b_cap, BaseOutputDir + "b", SaveFormat)
+
 
 
         
