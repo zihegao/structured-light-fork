@@ -18,7 +18,7 @@ WINDOW_NAME="phaseshift"
 
 def imShowAndCapture(cap, img_pattern, delay=250):
     cv2.imshow(WINDOW_NAME, img_pattern)
-    time.sleep(1)
+    cv2.delay(250)
     ret, img_frame = cap.read()
     img_gray = cv2.cvtColor(img_frame, cv2.COLOR_BGR2GRAY)    
     return img_gray
@@ -76,7 +76,7 @@ while DoNextIteration:
         imlist_posi_x_pat = phaseshifting.generate((width, height))
         imlist_nega_x_pat = sl.invert(imlist_posi_x_pat)
 
-        imgToDisplay = np.zeros((width, height), dtype = np.uint8)
+        imgToDisplay = np.zeros((height, width), dtype = np.uint8)
         cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
         cv2.imshow(WINDOW_NAME, imgToDisplay)
         cv2.waitKey(0)
