@@ -7,8 +7,8 @@ import numpy as np
 
 
 directories_to_use = [i for i in range(6)]
-basePath = """./captures/Calib3/c_{0}/"""
-outPathTemplate = """./camera_calibration_out/Calib3/c_{0}/"""
+basePath = """../captures/Calib3/c_{0}/"""
+outPathTemplate = """../camera_calibration_out/Calib3/c_{0}/"""
 imgfmt = ".jpg"
 projector_resolution =(1920, 1080)
 
