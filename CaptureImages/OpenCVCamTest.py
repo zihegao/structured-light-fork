@@ -1,7 +1,7 @@
 import cv2
 
 # Replace 1 with whatever camera you want 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 if not cap.isOpened():
     print("Error: Could not open camera.")
