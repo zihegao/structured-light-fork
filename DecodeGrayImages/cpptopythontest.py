@@ -42,21 +42,23 @@ def load_images(current_dir, img_format):
         # Read horizontal, vertical, inverse horizontal, and inverse vertical images
         h_img = cv2.imread(os.path.join(current_dir, f"h{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
         v_img = cv2.imread(os.path.join(current_dir, f"v{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
-        ih_img = cv2.imread(os.path.join(current_dir, f"ih{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
-        iv_img = cv2.imread(os.path.join(current_dir, f"iv{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
+        #ih_img = cv2.imread(os.path.join(current_dir, f"ih{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
+        #iv_img = cv2.imread(os.path.join(current_dir, f"iv{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
 
         # Check if images were loaded successfully
-        if h_img is None or v_img is None or ih_img is None or iv_img is None:
+        #if h_img is None or v_img is None or ih_img is None or iv_img is None:
+        if h_img is None or v_img is None:
             print("OpenCV could not open some files. Please ensure the following files exist:")
-            print(f"{os.path.join(current_dir, f'h{i}{img_format}')}")
-            print(f"{os.path.join(current_dir, f'v{i}{img_format}')}")
-            print(f"{os.path.join(current_dir, f'ih{i}{img_format}')}")
-            print(f"{os.path.join(current_dir, f'iv{i}{img_format}')}")
+            print(f"{os.path.join(current_dir, f'h{i}{img_format}')}") #missing a horizonal pattern light image
+            print(f"{os.path.join(current_dir, f'v{i}{img_format}')}") #missing a vertical pattern light image
+            print(f"{os.path.join(current_dir, f'ih{i}{img_format}')}") #missing an inverse horizontal pattern light image
+            print(f"{os.path.join(current_dir, f'iv{i}{img_format}')}") #missing an inverse vertical pattern light image
             return False, None, None, None, None
 
         # Append images to respective lists
         h_imgs.append(h_img)
         v_imgs.append(v_img)
+        
         ih_imgs.append(ih_img)
         iv_imgs.append(iv_img)
         
