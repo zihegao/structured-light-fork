@@ -35,7 +35,7 @@ def SaveImage(FileName):
 
 def capture_and_save_image(file_name):
     # Initialize the camera
-    cap = cv2.VideoCapture(1)  # 0 for the default camera, you can change it if needed
+    cap = cv2.VideoCapture(0)  # 0 for the default camera, you can change it if needed
 
     time.sleep(0)  # Pause execution for one second
 

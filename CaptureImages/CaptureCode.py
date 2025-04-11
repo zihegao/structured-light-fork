@@ -9,10 +9,10 @@ import time
 import structuredlight as sl
 
 DETACHED_PROCESS = 0x00000008 
-BaseOutputDirBeforeNew = "../captures/"
+BaseOutputDirBeforeNew = "./captures/"
 SubCaptDir = "c_"
 SaveFormat = ".jpg"
-WINDOW_NAME="Projected Sturctured Light"
+WINDOW_NAME="Projected Structured Light"
 num_fringes = 3 # cant be less than 3
 useKinect = False
 PhaseShift = True
@@ -85,7 +85,7 @@ while DoNextIteration:
         destroyW()
 
     if PhaseShift is True:
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
         #takes image to wake camera
         testcap = cap.read()
         ps = sl.PhaseShifting(num=num_fringes)

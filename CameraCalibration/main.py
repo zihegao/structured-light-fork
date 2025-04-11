@@ -1,14 +1,14 @@
 import cv2
 from cv2 import aruco
-import BoardInfo
-from GetSecondViewPoints import getCameraCoordinates
+from CameraCalibration import BoardInfo
+from CameraCalibration.GetSecondViewPoints import getCameraCoordinates
 import os
 import numpy as np
 
 
 directories_to_use = [i for i in range(6)]
-basePath = """../captures/Calib3/c_{0}/"""
-outPathTemplate = """../camera_calibration_out/Calib3/c_{0}/"""
+basePath = """./captures/Calib3/c_{0}/"""
+outPathTemplate = """./camera_calibration_out/Calib3/c_{0}/"""
 imgfmt = ".jpg"
 projector_resolution =(1920, 1080)
 
@@ -45,7 +45,7 @@ for dirnum in directories_to_use:
     charucoCorners, charucoIds = [], []
     if len(ids) > 0:
         numCorners, charucoCorners, charucoIds = aruco.interpolateCornersCharuco(corners, ids, img, BoardInfo.charucoBoard)
-    if len(charucoIds)<0:
+    if charucoIds is None:
         continue
 
     all_charco_corners_camera.append(charucoCorners.copy())
@@ -57,7 +57,7 @@ for dirnum in directories_to_use:
     valid_points, new_points_cam, new_points_projector = getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners)
     charucoIds = charucoIds[valid_points]
 
-    if len(charucoIds)<0:
+    if charucoIds is None:
         continue
 
     all_charco_corners_camera_2.append(new_points_cam)
