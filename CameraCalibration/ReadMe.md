@@ -7,10 +7,10 @@ DEPENDENCIES
      OS
 
 DESCRIPTION
-     BoardInfo.py - Is used in KinectCameraCalibration.py, KinectStereoCalibration.py, GenerateAurcoAndChaurco.py, and CalibratePositionOfKinectDepthToCamera.py, this code defines board 
+     BoardInfo.py -- Is used in KinectCameraCalibration.py, KinectStereoCalibration.py, GenerateAurcoAndChaurco.py, and CalibratePositionOfKinectDepthToCamera.py, this code defines board 
      layout, marker size, and dictionary settings for generating ArUco and ChArUco calibration patterns used in camera calibration scripts.
      
-     CalibratePositionOfKinectDepthToCamera.py
+     CalibratePositionOfKinectDepthToCamera.py -- This code commits marker detection and corner extraction for camera calibration. Processing a set of already calibrated images by using          ArUco markers in Kinect RGB images and chessboard corners in the camera images. The script will generate visualization of markers and prepare data, saving the results in a designated        area for following steps.
      
      GenerateAurcoAndChaurco.py
      
