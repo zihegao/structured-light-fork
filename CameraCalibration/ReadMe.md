@@ -12,7 +12,8 @@ DESCRIPTION
      
      CalibratePositionOfKinectDepthToCamera.py -- This code commits marker detection and corner extraction for camera calibration. Processing a set of already calibrated images by using          ArUco markers in Kinect RGB images and chessboard corners in the camera images. The script will generate visualization of markers and prepare data, saving the results in a designated        area for following steps.
      
-     GenerateAurcoAndChaurco.py
+     GenerateAurcoAndChaurco.py -- This code generates and saves .png files of the ChArUco board along with the ArUco board using Board.py. The images will then be used as reference 
+     patterns for camera and projector calibration
      
      GetSecondViewPoints.py
      
