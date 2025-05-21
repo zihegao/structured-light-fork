@@ -7,22 +7,26 @@ DEPENDENCIES
      OS
 
 DESCRIPTION
-     Atest.py
-     CamTest.py
-     CaptureCode.py
-     CaptureImage.py
-     CaptureUndestortedCodes.py
-     ConvertRawImage.py
-     DrawCorsshairs.py
-     GrayCodesWindow.py
-     GrayImages.py
-     InstructionImg.png
-     OpenCVCamTest.py
-     ShowHF.py
-     binaryPatturn.png
-     grayPatturn.png
-     kinectImageClass.py
-     produceAllGrayImages.py
+     BoardInfo.py - Is used in KinectCameraCalibration.py, KinectStereoCalibration.py, GenerateAurcoAndChaurco.py, and CalibratePositionOfKinectDepthToCamera.py, this code defines board 
+     layout, marker size, and dictionary settings for generating ArUco and ChArUco calibration patterns used in camera calibration scripts.
+     
+     CalibratePositionOfKinectDepthToCamera.py
+     
+     GenerateAurcoAndChaurco.py
+     
+     GetSecondViewPoints.py
+     
+     IRImageTestKinect.py
+     
+     KinectCameraCalibration.py
+     
+     KinectStereoCalibration.py
+     
+     main.py
+     
+     setup.py
+     
+     testcalibration.py
 
 FILE DESCRIPTIONS
 
