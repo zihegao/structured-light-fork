@@ -18,7 +18,7 @@ DESCRIPTION
      GetSecondViewPoints.py -- this file contains methods to estimate the projector coordinates based off the ChArUco corners in the cameras image. Computing a local homography around each 
      corner based on nearby points to map camera coordinates into projector coordinates, being essentialy for camera-projector calibration
      
-     IRImageTestKinect.py
+     IRImageTestKinect.py -- this code uses OpenNI2 to interface with the kinect sensor to then capture and display both IR and color streams, showing until q is pressed
      
      KinectCameraCalibration.py
      
