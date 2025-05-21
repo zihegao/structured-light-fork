@@ -15,7 +15,8 @@ DESCRIPTION
      GenerateAurcoAndChaurco.py -- This code generates and saves .png files of the ChArUco board along with the ArUco board using Board.py. The images will then be used as reference 
      patterns for camera and projector calibration
      
-     GetSecondViewPoints.py
+     GetSecondViewPoints.py -- this file contains methods to estimate the projector coordinates based off the ChArUco corners in the cameras image. Computing a local homography around each 
+     corner based on nearby points to map camera coordinates into projector coordinates, being essentialy for camera-projector calibration
      
      IRImageTestKinect.py
      
