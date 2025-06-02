@@ -1,76 +1,91 @@
-import cv2
-from cv2 import aruco
-from CameraCalibration import BoardInfo
-from CameraCalibration.GetSecondViewPoints import getCameraCoordinates
+# Camera Calibration using ChArUco Boards and Gray Code Structured Light
+# Detects ChArUco corners in images, maps them to projector coordinates using Gray Code decoding,
+# and performs stereo calibration between a camera and a projector. Outputs include intrinsic and extrinsic matrices.
+
 import os
+import cv2
+import BoardInfo
 import numpy as np
+from cv2 import aruco
+from GetSecondViewPoints import getCameraCoordinates
 
 
-directories_to_use = [i for i in range(6)]
-basePath = """./captures/Calib3/c_{0}/"""
+# cahnge this based on the number of c_# files
+directories_to_use = [i for i in range(6)] #can use data st from last year
+# directories_to_use = [2] #if only using 1 data set, specify with number inside brackets
+
+# path template for calibration sets 
+basePath = """./captures/Calib3/c_{0}/"""   
 outPathTemplate = """./camera_calibration_out/Calib3/c_{0}/"""
 imgfmt = ".jpg"
 projector_resolution =(1920, 1080)
 
+# storage for calibration points for both camera and projector
 all_charco_corners_camera = []
 all_charco_corners_camera_2 = []
 all_charco_corners_projector = []
 all_charco_ids_camera = []
 all_charco_ids_projector = []
-
 all_real_points = []
 
+# process each calibration set
 for dirnum in directories_to_use:
     path = basePath.format(dirnum)
     outPath = outPathTemplate.format(dirnum)
     os.makedirs(outPath, exist_ok=True)
 
+    # load reference image
     img = cv2.imread(path+"w"+imgfmt)
 
     if img is None:
         print("Skipping: "+path)
         continue
 
+    # load Gray code decoded images and volidity maps
     validV = cv2.imread(path+"out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
     validH = cv2.imread(path+"out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
     coordsV = cv2.imread(path+"out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
     coordsH = cv2.imread(path+"out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
 
-
-    corners, ids, rejected = aruco.detectMarkers(img, BoardInfo.aurcoDict)
+    # detect Aruco markers
+    corners, ids, rejected = aruco.detectMarkers(img, BoardInfo.arucoDict)
     cimg = aruco.drawDetectedMarkers(img.copy(), corners, ids)
 
     cv2.imwrite(outPath+"DetectedMarkers.png", cimg)
 
+    # interpolate charuco corners
     charucoCorners, charucoIds = [], []
     if len(ids) > 0:
         numCorners, charucoCorners, charucoIds = aruco.interpolateCornersCharuco(corners, ids, img, BoardInfo.charucoBoard)
     if charucoIds is None:
         continue
 
+    # saves detected corners with IDs
     all_charco_corners_camera.append(charucoCorners.copy())
     all_charco_ids_camera.append(charucoIds.copy())
 
+    # visualize and save detected charuco corners
     cimg = aruco.drawDetectedCornersCharuco(img.copy(), charucoCorners, charucoIds)
     cv2.imwrite(outPath+"DetectedCorners.png", cimg)
 
+    # get corresponding projector and filtered camera cordinates
     valid_points, new_points_cam, new_points_projector = getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners)
     charucoIds = charucoIds[valid_points]
 
     if charucoIds is None:
         continue
 
+    # saves filtered points for stereo calibration
     all_charco_corners_camera_2.append(new_points_cam)
     print(charucoIds[:, 0])
     all_real_points.append(BoardInfo.charucoBoard.getChessboardCorners())
     print(all_real_points)
 
-
-
     print(new_points_projector)
     all_charco_corners_projector.append(new_points_projector)
     all_charco_ids_projector.append(charucoIds)
 
+# save resolution of the camera image   
 camera_resolution = img.shape[:-1]
 
 #CalibrationFlags=cv2.CALIB_ZERO_TANGENT_DIST + cv2.CALIB_FIX_K1 + cv2.CALIB_FIX_K2 + cv2.CALIB_FIX_K3
@@ -91,7 +106,7 @@ newcameramtx_proj, roi_proj=cv2.getOptimalNewCameraMatrix(cameraMatrix2,distCoef
 invCamMtx = np.linalg.inv(newcameramtx_camera)
 invProjMtx = np.linalg.inv(newcameramtx_proj)
 
-
+# save less distorted calibration results
 np.savez("./camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
@@ -109,7 +124,7 @@ np.savez("./camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
          invCamMtx=invCamMtx,
          invProjMtx=invProjMtx)
 
-
+# repeat calibration *without* distortion fix flags (more flexible, higher potential distortion)
 rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charco_corners_camera, all_charco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None)
 rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, BoardInfo.charucoBoard, projector_resolution, None, None)
 
@@ -118,13 +133,14 @@ retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
                         mtx_camera, dist_camera, mtx_proj,
                         dist_proj, camera_resolution, flags=cv2.CALIB_FIX_INTRINSIC)
 
+# yet again, compute optimal undistorted matrices
 newcameramtx_camera, roi_camera=cv2.getOptimalNewCameraMatrix(cameraMatrix1,distCoeffs1,camera_resolution,1, camera_resolution)
 newcameramtx_proj, roi_proj=cv2.getOptimalNewCameraMatrix(cameraMatrix2,distCoeffs2,projector_resolution,1, projector_resolution)
 
 invCamMtx = np.linalg.inv(newcameramtx_camera)
 invProjMtx = np.linalg.inv(newcameramtx_proj)
 
-
+# save the full (possibly more distorted) calibration result
 np.savez("./camera_calibration_out/calculated_cams_matrix.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
