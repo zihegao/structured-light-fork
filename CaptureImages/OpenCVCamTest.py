@@ -1,3 +1,7 @@
+# openvscamtest.py
+# opens a camera feed using OpenCV, sets resolution to 640x480, and displays it until 'q' is pressed.
+# useful for testing camera input and resolution settings.
+
 import cv2
 
 # Replace 1 with whatever camera you want 
