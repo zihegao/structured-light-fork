@@ -1,185 +1,192 @@
-#include <iostream>
-#include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
-#include <string>
+# Structured Light Gray Code Decoder
+# Decodes horizontal and vertical Gray code patterns from projector-camera images
+# Outputs binary/gray maps, direct/indirect illumination, and invalid pixel masks
 
-#define DEFAULT_IMAGE_FORMAT ".jpg"
-#define NUMBER_OF_BITS 10
-#define mVal 15
+import os
+import cv2
+import numpy as np
 
-uint16_t getGrayCode(uint16_t gray)
-{
-	gray ^= (gray>>8);
-	gray ^= (gray>>4);
-	gray ^= (gray>>2);
-	gray ^= (gray>>1);
-	return gray;
-}
+# Constants
+DEFAULT_IMAGE_FORMAT = ".jpg"
+NUMBER_OF_BITS = 10
+mVal = 15
 
-bool getIsLit(double Ld, double Lg, uint8_t pVal, uint8_t ipVal, uint8_t &isInvalid, double epsalon=5) {
+# Function to calculate Gray code
+def get_gray_code(gray):
+    gray ^= (gray >> 8)
+    gray ^= (gray >> 4)
+    gray ^= (gray >> 2)
+    gray ^= (gray >> 1)
+    return gray
 
-	if ((Ld > Lg+epsalon) && (pVal > ipVal+epsalon)) { return true; }
-	if ((Ld > Lg+epsalon) && (pVal+epsalon < ipVal)) { return false; }
-	if ((pVal+epsalon < Ld) && (ipVal > Lg+epsalon)) { return false; }
-	if ((pVal > Lg+epsalon) && (ipVal+epsalon < Ld)) { return true; }
-	isInvalid = 255;
-	return false;
-}
+# Function to determine if a pixel is lit or not
+def get_is_lit(Ld, Lg, pVal, ipVal, epsalon=5):
+    if (Ld > Lg + epsalon) and (pVal > ipVal + epsalon):
+        return True, 0
+    if (Ld > Lg + epsalon) and (pVal + epsalon < ipVal):
+        return False, 0
+    if (pVal + epsalon < Ld) and (ipVal > Lg + epsalon):
+        return False, 0
+    if (pVal > Lg + epsalon) and (ipVal + epsalon < Ld):
+        return True, 0
+    return False, 255
 
-bool load_images(std::string currentDir, std::string imgFormat, uint8_t* ph[NUMBER_OF_BITS], uint8_t* pv[NUMBER_OF_BITS], uint8_t* pih[NUMBER_OF_BITS], uint8_t* piv[NUMBER_OF_BITS],
-	cv::Mat hImgs[NUMBER_OF_BITS], cv::Mat ihImgs[NUMBER_OF_BITS], cv::Mat vImgs[NUMBER_OF_BITS], cv::Mat ivImgs[NUMBER_OF_BITS]) {
-	for (int i = 0; i < NUMBER_OF_BITS; i++) {
-		hImgs[i] = cv::imread(currentDir + "/h" + std::to_string(i) + imgFormat, cv::IMREAD_GRAYSCALE);
-		vImgs[i] = cv::imread(currentDir + "/v" + std::to_string(i) + imgFormat, cv::IMREAD_GRAYSCALE);
-		ihImgs[i] = cv::imread(currentDir + "/ih" + std::to_string(i) + imgFormat, cv::IMREAD_GRAYSCALE);
-		ivImgs[i] = cv::imread(currentDir + "/iv" + std::to_string(i) + imgFormat, cv::IMREAD_GRAYSCALE);
-		if (hImgs[i].empty() || vImgs[i].empty() || ihImgs[i].empty() || ivImgs[i].empty()) {
-			std::cout << "OpenCV could not open some files. Please ensure the following files exist." << std::endl
-				<< currentDir + "/h" + std::to_string(i) + imgFormat << std::endl
-				<< currentDir + "/v" + std::to_string(i) + imgFormat << std::endl
-				<< currentDir + "/ih" + std::to_string(i) + imgFormat << std::endl
-				<< currentDir + "/iv" + std::to_string(i) + imgFormat << std::endl;
-			return false;
-		}
-		if (hImgs[i].isContinuous() && vImgs[i].isContinuous() && ihImgs[i].isContinuous() && ivImgs[i].isContinuous()) {
-			ph[i] = hImgs[i].ptr<uint8_t>(0);
-			pv[i] = vImgs[i].ptr<uint8_t>(0);
-			pih[i] = ihImgs[i].ptr<uint8_t>(0);
-			piv[i] = ivImgs[i].ptr<uint8_t>(0);
-		}
-		else {
-			std::cout << "Some images werent stored continously. This should not happend and hence is not accounted for." << std::endl;
-			return false;
-		}
-	}
-	return true;
-}
+# Function to load images
+def load_images(current_dir, img_format):
+    h_imgs = []
+    v_imgs = []
+    ih_imgs = []
+    iv_imgs = []
+    ph = []
+    pv = []
+    pih = []
+    piv = []
 
+    for i in range(NUMBER_OF_BITS):
+        # Read horizontal, vertical, inverse horizontal, and inverse vertical images
+        h_img = cv2.imread(os.path.join(current_dir, f"h{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
+        v_img = cv2.imread(os.path.join(current_dir, f"v{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
+        ih_img = cv2.imread(os.path.join(current_dir, f"ih{i}{img_format}"), cv2.IMREAD_GRAYSCALE)    # uncommented these 2, this and 1 line below it
+        iv_img = cv2.imread(os.path.join(current_dir, f"iv{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
 
-int main(int argc, char *argv[])
-{
-	std::string currentDir = ".";
-	std::string imgFormat = DEFAULT_IMAGE_FORMAT;
+        # Check if images were loaded successfully
+        #if h_img is None or v_img is None or ih_img is None or iv_img is None:
+        if h_img is None or v_img is None:
+            print("OpenCV could not open some files. Please ensure the following files exist:")
+            print(f"{os.path.join(current_dir, f'h{i}{img_format}')}") #missing a horizonal pattern light image
+            print(f"{os.path.join(current_dir, f'v{i}{img_format}')}") #missing a vertical pattern light image
+            print(f"{os.path.join(current_dir, f'ih{i}{img_format}')}") #missing an inverse horizontal pattern light image
+            print(f"{os.path.join(current_dir, f'iv{i}{img_format}')}") #missing an inverse vertical pattern light image
+            return False, None, None, None, None
 
-	if (argc >= 2) {
-		currentDir = std::string(argv[1]);
-		std::cout << "The following directory will be used to search for the captured Images: " << currentDir << std::endl;
-	} 
-	if (argc > 2) {
-		imgFormat = std::string(argv[2]);
-		std::cout << "The following image format will be used: " << imgFormat << std::endl;
-	}
-	cv::Mat hImgs[NUMBER_OF_BITS], ihImgs[NUMBER_OF_BITS], vImgs[NUMBER_OF_BITS], ivImgs[NUMBER_OF_BITS];
-	uint8_t *ph[NUMBER_OF_BITS], *pv[NUMBER_OF_BITS], *pih[NUMBER_OF_BITS], *piv[NUMBER_OF_BITS];
+        # Append images to respective lists
+        h_imgs.append(h_img)
+        v_imgs.append(v_img)
+        
+        ih_imgs.append(ih_img)
+        iv_imgs.append(iv_img)
+        
+        ph.append(h_img)
+        pv.append(v_img)
+        pih.append(ih_img)
+        piv.append(iv_img)
+    
+    return True, h_imgs, v_imgs, ih_imgs, iv_imgs, ph, pv, pih, piv
 
-	if (!load_images(currentDir, imgFormat, ph, pv, pih, piv, hImgs, ihImgs, vImgs, ivImgs)) { return 1; }
+# Main function
+def main():
+    import sys
+    current_dir = "."
+    img_format = DEFAULT_IMAGE_FORMAT
 
+    # Check if command-line arguments are provided for directory and image format
+    if len(sys.argv) >= 2:
+        current_dir = sys.argv[1]
+        print(f"The following directory will be used to search for the captured Images: {current_dir}")
+    if len(sys.argv) > 2:
+        img_format = sys.argv[2]
+        print(f"The following image format will be used: {img_format}")
 
+    # Load images
+    success, h_imgs, v_imgs, ih_imgs, iv_imgs, ph, pv, pih, piv = load_images(current_dir, img_format)
+    if not success:
+        return
 
-	cv::Mat bImg, wImg;
-	bImg = cv::imread(currentDir + "/b" + imgFormat, cv::IMREAD_GRAYSCALE);
-	wImg = cv::imread(currentDir + "/w" + imgFormat, cv::IMREAD_GRAYSCALE);
-	if (bImg.empty() || wImg.empty()) {
-		std::cout << "OpenCV could not open some files. Please ensure the following files exist." << std::endl
-			<< currentDir + "/b" + imgFormat << std::endl
-			<< currentDir + "/w" + imgFormat << std::endl;
-		return 1;
-	}
+    # Read black and white reference images
+    b_img = cv2.imread(os.path.join(current_dir, f"b{img_format}"), cv2.IMREAD_GRAYSCALE)
+    w_img = cv2.imread(os.path.join(current_dir, f"w{img_format}"), cv2.IMREAD_GRAYSCALE)
+    if b_img is None or w_img is None:
+        print("OpenCV could not open some files. Please ensure the following files exist:")
+        print(f"{os.path.join(current_dir, f'b{img_format}')}")
+        print(f"{os.path.join(current_dir, f'w{img_format}')}")
+        return
 
-	cv::Mat BinImageV(bImg.rows, bImg.cols, CV_16U);
-	cv::Mat GrayImageV(bImg.rows, bImg.cols, CV_16U);
-	cv::Mat InvalidImageV(bImg.rows, bImg.cols, CV_8U);
+    # Initialize arrays for processed images
+    bin_image_v = np.zeros(b_img.shape, dtype=np.uint16)
+    gray_image_v = np.zeros(b_img.shape, dtype=np.uint16)
+    invalid_image_v = np.zeros(b_img.shape, dtype=np.uint8)
 
-	cv::Mat BinImageH(bImg.rows, bImg.cols, CV_16U);
-	cv::Mat GrayImageH(bImg.rows, bImg.cols, CV_16U);
-	cv::Mat InvalidImageH(bImg.rows, bImg.cols, CV_8U);
+    bin_image_h = np.zeros(b_img.shape, dtype=np.uint16)
+    gray_image_h = np.zeros(b_img.shape, dtype=np.uint16)
+    invalid_image_h = np.zeros(b_img.shape, dtype=np.uint8)
 
-	cv::Mat DirectImage(bImg.rows, bImg.cols, CV_8U);
-	cv::Mat InDirectImage(bImg.rows, bImg.cols, CV_8U);
+    direct_image = np.zeros(b_img.shape, dtype=np.uint8)
+    indirect_image = np.zeros(b_img.shape, dtype=np.uint8)
 
+    pb = b_img
+    pw = w_img
 
-	uint8_t *pb, *pw, *pInvalidImageV, *pInvalidImageH, *pDirectImage, *pIndirectImage;
-	uint16_t *pGrayImageV, *pGrayImageH, *pBinImageV, *pBinImageH;
-	if (bImg.isContinuous() && wImg.isContinuous() && GrayImageV.isContinuous() && InvalidImageV.isContinuous()
-		&& GrayImageH.isContinuous() && InvalidImageH.isContinuous() && DirectImage.isContinuous() && InDirectImage.isContinuous()
-		&& BinImageH.isContinuous() && BinImageV.isContinuous()) {
-		pb = bImg.ptr<uint8_t>(0);
-		pw = wImg.ptr<uint8_t>(0);
+    # Iterate through each pixel
+    for px in range(b_img.size):
+        # Calculate intensity range
+        i_high = max(ph[9].flat[px], pih[9].flat[px], pv[9].flat[px], piv[9].flat[px],
+                     ph[8].flat[px], pih[8].flat[px], pv[8].flat[px], piv[8].flat[px],
+                     ph[7].flat[px], pih[7].flat[px], pv[7].flat[px], piv[7].flat[px],
+                     ph[6].flat[px], pih[6].flat[px], pv[6].flat[px], piv[6].flat[px])
+        
+        i_low = min(ph[9].flat[px], pih[9].flat[px], pv[9].flat[px], piv[9].flat[px],
+                    ph[8].flat[px], pih[8].flat[px], pv[8].flat[px], piv[8].flat[px],
+                    ph[7].flat[px], pih[7].flat[px], pv[7].flat[px], piv[7].flat[px],
+                    ph[6].flat[px], pih[6].flat[px], pv[6].flat[px], piv[6].flat[px])
 
-		pBinImageH = BinImageH.ptr<uint16_t>(0);
-		pGrayImageH = GrayImageH.ptr<uint16_t>(0);
-		pInvalidImageH = InvalidImageH.ptr<uint8_t>(0);
+        b_inv = float(pw.flat[px]) / (pw.flat[px] + pb.flat[px])
 
-		pBinImageV = BinImageV.ptr<uint16_t>(0);
-		pGrayImageV = GrayImageV.ptr<uint16_t>(0);
-		pInvalidImageV = InvalidImageV.ptr<uint8_t>(0);
+        Ld = (i_high - i_low) * b_inv
+        Lg = 2.0 * (i_high - Ld) * b_inv
 
-		pDirectImage = DirectImage.ptr<uint8_t>(0);
-		pIndirectImage = InDirectImage.ptr<uint8_t>(0);
-	}
-	else {
-		std::cout << "Some images werent stored continously. This should not happend and hence is not accounted for." << std::endl;
-		return 1;
-	}
-	for (int px = 0; px < bImg.size().area(); px++) {
-		uint8_t iHigh = std::max(std::max(std::max(ph[9][px], pih[9][px]), std::max(pv[9][px], piv[9][px])),
-			std::max(std::max(ph[8][px], pih[8][px]), std::max(pv[8][px], piv[8][px])));
-		iHigh = std::max(std::max(std::max(ph[7][px], pih[7][px]), std::max(pv[7][px], piv[7][px])), iHigh);
-		iHigh = std::max(std::max(std::max(ph[6][px], pih[6][px]), std::max(pv[6][px], piv[6][px])), iHigh);
-		uint8_t iLow = std::min(std::min(std::min(ph[9][px], pih[9][px]), std::min(pv[9][px], piv[9][px])),
-			std::min(std::min(ph[8][px], pih[8][px]), std::min(pv[8][px], piv[8][px])));
-		iLow = std::min(std::min(std::min(ph[7][px], pih[7][px]), std::min(pv[7][px], piv[7][px])), iLow);
-		iLow = std::min(std::min(std::min(ph[6][px], pih[6][px]), std::min(pv[6][px], piv[6][px])), iLow);
+        # Calculate direct and indirect images
+        direct_image.flat[px] = np.clip(Ld, 0, 255)
+        indirect_image.flat[px] = np.clip(Lg, 0, 255)
 
-		float b_inv = (float)pw[px] / (pw[px] + pb[px]);
+        gray_image_v.flat[px] = 0
+        gray_image_h.flat[px] = 0
 
-		double Ld = (iHigh - iLow) * b_inv;
-		double Lg = 2.0 * (iHigh - Ld) * b_inv;
+        bin_image_v.flat[px] = 0
+        bin_image_h.flat[px] = 0
 
-		pDirectImage[px] = (uint8_t)std::min(255.0, std::max(0.0, Ld));
-		pIndirectImage[px] = (uint8_t)std::min(255.0, std::max(0.0, Lg));
+        # Check if pixel intensity is below threshold
+        if Ld < mVal:
+            invalid_image_v.flat[px] = 255
+            invalid_image_h.flat[px] = 255
+            continue
 
-		uint16_t grayCode = 0;
+        # Initialize value to add for each bit
+        val_to_add = 1
 
-		pGrayImageV[px] = 0;
-		pGrayImageH[px] = 0;
+        # Process horizontal bits
+        invalid_image_h.flat[px] = 0
+        for i in range(NUMBER_OF_BITS - 1, -1, -1):
+            is_lit, invalid_flag = get_is_lit(Ld, Lg, ph[i].flat[px], pih[i].flat[px])
+            if is_lit:
+                gray_image_h.flat[px] += val_to_add
+            if invalid_flag:
+                invalid_image_h.flat[px] = invalid_flag
+            val_to_add <<= 1
+        bin_image_h.flat[px] = get_gray_code(gray_image_h.flat[px])
 
-		pBinImageV[px] = 0;
-		pBinImageH[px] = 0;
+        # Process vertical bits
+        val_to_add = 1
+        invalid_image_v.flat[px] = 0
+        for i in range(NUMBER_OF_BITS - 1, -1, -1):
+            is_lit, invalid_flag = get_is_lit(Ld, Lg, pv[i].flat[px], piv[i].flat[px])
+            if is_lit:
+                gray_image_v.flat[px] += val_to_add
+            if invalid_flag:
+                invalid_image_v.flat[px] = invalid_flag
+            val_to_add <<= 1
+        bin_image_v.flat[px] = get_gray_code(gray_image_v.flat[px])
 
-		if (Ld < mVal) {
-			pInvalidImageV[px] = 255;
-			pInvalidImageH[px] = 255;
-			continue;
-		}
+    # Save processed images
+    cv2.imwrite(os.path.join(current_dir, "out_DirectImage.tiff"), direct_image)
+    cv2.imwrite(os.path.join(current_dir, "out_IndirectImage.tiff"), indirect_image)
 
-		uint16_t valToAdd = 1;
-		pInvalidImageH[px] = 0;
-		for (int i = NUMBER_OF_BITS - 1; i >= 0 &&  pInvalidImageH[px] == 0; i--) {
-			if (getIsLit(Ld, Lg, ph[i][px], pih[i][px], pInvalidImageH[px])) { pGrayImageH[px] += valToAdd; }
-			valToAdd <<= 1;
-		}
-		pBinImageH[px] = getGrayCode(pGrayImageH[px]);
-		valToAdd = 1;
-		pInvalidImageV[px] = 0;
-		for (int i = NUMBER_OF_BITS - 1; i >= 0 && pInvalidImageV[px] == 0; i--) {
-			if (getIsLit(Ld, Lg, pv[i][px], piv[i][px], pInvalidImageV[px])) { pGrayImageV[px] += valToAdd; }
-			valToAdd <<= 1;
-		}
-		pBinImageV[px] = getGrayCode(pGrayImageV[px]);
+    cv2.imwrite(os.path.join(current_dir, "out_BinImageH.tiff"), bin_image_h)
+    cv2.imwrite(os.path.join(current_dir, "out_GrayImageH.tiff"), gray_image_h)
+    cv2.imwrite(os.path.join(current_dir, "out_InvalidImageH.tiff"), invalid_image_h)
 
+    cv2.imwrite(os.path.join(current_dir, "out_BinImageV.tiff"), bin_image_v)
+    cv2.imwrite(os.path.join(current_dir, "out_GrayImageV.tiff"), gray_image_v)
+    cv2.imwrite(os.path.join(current_dir, "out_InvalidImageV.tiff"), invalid_image_v)
 
-	}
-
-	cv::imwrite(currentDir + "/out_DirectImage.tiff", DirectImage);
-	cv::imwrite(currentDir + "/out_indirectImage.tiff", InDirectImage);
-
-	cv::imwrite(currentDir + "/out_BinImageH.tiff", BinImageH);
-	cv::imwrite(currentDir + "/out_GrayImageH.tiff", GrayImageH);
-	cv::imwrite(currentDir + "/out_InvalidImageH.tiff", InvalidImageH);
-
-	cv::imwrite(currentDir + "/out_BinImageV.tiff", BinImageV);
-	cv::imwrite(currentDir + "/out_GrayImageV.tiff", GrayImageV);
-	cv::imwrite(currentDir + "/out_InvalidImageV.tiff", InvalidImageV);
-}
+if __name__ == "__main__":
+    main()
