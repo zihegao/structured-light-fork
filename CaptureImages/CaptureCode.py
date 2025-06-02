@@ -14,8 +14,10 @@ SubCaptDir = "c_"
 SaveFormat = ".jpg"
 WINDOW_NAME="Projected Structured Light"
 num_fringes = 3 # cant be less than 3
+
+# important for version of code using
 useKinect = False
-PhaseShift = True
+PhaseShift = False
 
 
 if (useKinect):
