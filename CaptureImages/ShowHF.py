@@ -1,3 +1,7 @@
+# ShowHF.py
+# displays specific horizontal Gray code patterns using the BinaryImage class from GrayImages.py
+# can be used to visually test pattern projection or camera capture alignment
+
 import cv2
 from GrayImages import BinaryImage
 
