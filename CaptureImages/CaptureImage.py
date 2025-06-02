@@ -1,3 +1,7 @@
+# 
+# 
+# 
+
 import os
 import cv2
 import time
@@ -13,7 +17,7 @@ GPHOTO_PATH="C:/CameraLibs/win32/gphoto2.exe"
 TEMP_GPHOTO_DIR = "capture/out.temp"
 GPHOTO_PARAMS = " --capture-image-and-download --filename "
 
-
+# takes photo with gphoto2, store > read > return, then delete from the temp file
 def TakeImage():
     if os.path.isfile(TEMP_GPHOTO_DIR):
         os.remove(TEMP_GPHOTO_DIR)
@@ -26,13 +30,14 @@ def TakeImage():
     
     return img
 
-
+# takes a saves photo directly to the filename 
 def SaveImage(FileName):
     if os.path.isfile(FileName):
         os.remove(FileName)
 
     return os.system(GPHOTO_PATH + GPHOTO_PARAMS + FileName)
 
+# capture image using webcame then save it to the file name specified
 def capture_and_save_image(file_name):
     # Initialize the camera
     cap = cv2.VideoCapture(0)  # 0 for the default camera, you can change it if needed
@@ -63,5 +68,3 @@ def capture_and_save_image(file_name):
 
 # Example usage:
 # capture_and_save_image("captured_image.jpg")
-
-
