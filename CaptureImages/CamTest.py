@@ -1,3 +1,6 @@
+# file is used to determine if a camera is properly connected and is available
+# will print to consolde that 'index' camera is available if so, else none will be 
+
 import cv2
 
 def get_available_cameras():
