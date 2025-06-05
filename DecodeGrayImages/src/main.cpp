@@ -4,6 +4,6 @@
 
 int main()
 {
-    std::cout << CV_VERSION << std::end1;
+    std::cout << CV_VERSION << std::endl; // changes from end1 to endl
     return 0;
 }
