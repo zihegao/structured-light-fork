@@ -41,7 +41,7 @@ for dirnum in directories_to_use:
         print("Skipping: "+path)
         continue
 
-    # load Gray code decoded images and volidity maps
+    # load Gray code decoded images and validity maps
     validV = cv2.imread(path+"out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
     validH = cv2.imread(path+"out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
     coordsV = cv2.imread(path+"out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
