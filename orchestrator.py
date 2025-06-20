@@ -1,5 +1,6 @@
 # orchesstrator.py
 # this script can run sections, or through the entire code bank process using the UI given in the terminal when run
+# suggest reading the grey code tutorial script to understand the process without this script being used, then run this file
 #
 # notes on capture code section
 # use a notepad/white image on the projector to illuminate Charucoboard, if not all corners detected wait and try again before changing anything
@@ -80,6 +81,8 @@ def capture_workflow():
 
     for idx in range(total_sets):
         print(f"\n=== Preparing to capture set {idx}/{total_sets - 1} ===")
+        
+        print("open notepad and place over projector output to illuminate board for test corner detection")
 
         # only do CharUco check if this is a calibration set, not for object sets
         if is_calib:
@@ -250,10 +253,15 @@ def main():
     # interative UI IO that can run starting from any at any point of the Gray Code process
     while (not done):
         print("\n=== STRUCTURED-LIGHT ORCHESTRATOR FILE ===")
+        print("Press a number then press enter to select which step you would like to start from")
         print("1) Capture new images, for object or calibration")
         print("2) Decode, for calibration sets or object set")
+        print("        must have structured-light-master>captures> Calib3 or ObjectName folder exist")
         print("3) Calibrate, using current sets inside structure--light-master")
+        print("        must have structured-light-master>captures> Calib3 or ObjectName folder exist")
         print("4) Reproject, using object file and current .npz from camera calibration")
+        print("        when npz file is read return value must be under 0 for a good reproject")
+        print("        after running reproject step, a .ply file should exist in structured-light-master>captures>objectName file")
         print("5) Read the npz file, visualize intrinsic matrix and return value")
         print("6) Exit")
 
