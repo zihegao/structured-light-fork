@@ -260,6 +260,7 @@ def main():
         print("3) Calibrate, using current sets inside structure--light-master")
         print("        must have structured-light-master>captures> Calib3 or ObjectName folder exist")
         print("4) Reproject, using object file and current .npz from camera calibration")
+        print("        make sure file name in ReprojectImage main.py is named according to ObjectName to be reprojected")
         print("        when npz file is read return value must be under 0 for a good reproject")
         print("        after running reproject step, a .ply file should exist in structured-light-master>captures>objectName file")
         print("5) Read the npz file, visualize intrinsic matrix and return value")
