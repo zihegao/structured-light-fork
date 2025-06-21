@@ -6,7 +6,7 @@ import struct
 
 imgfmt = ".jpg"
 baseReadPath = "./captures/"
-datasets = ["WaterBottleR"] #Telephone, WaterBottle, Hand
+datasets = ["WaterBottle"] #Telephone, WaterBottle, Hand
 CalibAtribs = np.load("./camera_calibration_out/calculated_cams_matrix.npz")
 retval=CalibAtribs["retval"]
 cameraMatrix1=CalibAtribs["cameraMatrix1"]
