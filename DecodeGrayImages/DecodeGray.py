@@ -42,8 +42,8 @@ def load_images(current_dir, img_format):
         # Read horizontal, vertical, inverse horizontal, and inverse vertical images
         h_img = cv2.imread(os.path.join(current_dir, f"h{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
         v_img = cv2.imread(os.path.join(current_dir, f"v{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
-        #ih_img = cv2.imread(os.path.join(current_dir, f"ih{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
-        #iv_img = cv2.imread(os.path.join(current_dir, f"iv{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
+        ih_img = cv2.imread(os.path.join(current_dir, f"ih{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
+        iv_img = cv2.imread(os.path.join(current_dir, f"iv{i}{img_format}"), cv2.IMREAD_GRAYSCALE)
 
         # Check if images were loaded successfully
         #if h_img is None or v_img is None or ih_img is None or iv_img is None:
