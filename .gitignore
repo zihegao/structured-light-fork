@@ -1,3 +1,10 @@
+# Python cache
+__pycache__/
+*.pyc
 
-*.pyc
-*.pyc
+# Visual Studio
+.vs/
+
+# Mac and Windows system files (optional but useful)
+.DS_Store
+Thumbs.db
