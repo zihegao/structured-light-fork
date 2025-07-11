@@ -6,7 +6,7 @@ import struct
 
 imgfmt = ".jpg"
 baseReadPath = "./captures/"
-datasets = ["WaterBottleR"] #Telephone, WaterBottle, Hand
+datasets = ["WaterBottle"] # object folder name
 CalibAtribs = np.load("./camera_calibration_out/calculated_cams_matrix.npz")
 retval=CalibAtribs["retval"]
 cameraMatrix1=CalibAtribs["cameraMatrix1"]
@@ -29,6 +29,7 @@ projector_resolution =(1920, 1080)
 T=T[:,0]
 for dataset in datasets:
     for captureFolder in os.listdir(baseReadPath+dataset):
+        print(datasets)
         if not os.path.isdir(baseReadPath+dataset+"/"+captureFolder):
             continue
         path = baseReadPath+dataset+"/"+captureFolder + "/"
@@ -77,9 +78,9 @@ for dataset in datasets:
                 fp.write(struct.pack("i", 3)+struct.pack("d",pt[0])+struct.pack("d",pt[1])+struct.pack("d",pt[2]))
 
         downpcd = pcd.voxel_down_sample(voxel_size=0.5)
-        #downpcd, ind = open3d.statistical_outlier_removal(downpcd,
+        # downpcd, ind = open3d.statistical_outlier_removal(downpcd,
         #                                             nb_neighbors=30, std_ratio=3)
-        #downpcd = open3d.voxel_down_sample(cl, voxel_size=0.2)
+        # downpcd = open3d.voxel_down_sample(cl, voxel_size=0.2)
 
         open3d.io.write_point_cloud(baseReadPath+dataset+"/"+"downsampled_capturedPointCloud_"+captureFolder + ".ply", downpcd)
 
@@ -91,9 +92,34 @@ for dataset in datasets:
 
         pts_hold = np.array(downpcd.points)
         colors_hold = np.array(downpcd.colors)
-        filterLocs = np.logical_and(np.logical_and(pts_hold[:, 2] < 950, pts_hold[:, 2] > 200),
-                                    np.logical_and(np.logical_and(pts_hold[:, 0] < 530, pts_hold[:, 0] > -60),
-                                                   np.logical_and(pts_hold[:, 1] < 160, pts_hold[:, 1] > -350)))
+        filterLocs = np.logical_and(
+            np.logical_and(pts_hold[:, 2] < 1567537, pts_hold[:, 2] > -8836782),          # z range
+            np.logical_and(
+                np.logical_and(pts_hold[:, 0] < 3992105, pts_hold[:, 0] > -791900),     # x range
+                np.logical_and(pts_hold[:, 1] < 2826662, pts_hold[:, 1] > -221705)      # y range
+            )
+        )
+        ###############################################
+
+        #print(f"pts_hold x range: {np.min(pts_hold[:, 0])} to {np.max(pts_hold[:, 0])}")
+        #print(f"pts_hold y range: {np.min(pts_hold[:, 1])} to {np.max(pts_hold[:, 1])}")
+        #print(f"pts_hold z range: {np.min(pts_hold[:, 2])} to {np.max(pts_hold[:, 2])}")
+        #print(f"Total points before filtering: {pts_hold.shape[0]}")
+        #print("")
+
+        #print("Before filtering:")
+        #print(" - Total points:", len(pts_hold))
+
+        # Show filtering mask stats
+        #print(" - filterLocs shape:", filterLocs.shape)
+        #print(" - Num kept:", np.sum(filterLocs))
+        #print(" - Num removed:", len(filterLocs) - np.sum(filterLocs))
+
+        #print("pts_hold x range:", pts_hold[:,0].min(), pts_hold[:,0].max())
+        #print("pts_hold y range:", pts_hold[:,1].min(), pts_hold[:,1].max())
+        #print("pts_hold z range:", pts_hold[:,2].min(), pts_hold[:,2].max())
+
+        ##################################################
         pts_hold = pts_hold[filterLocs]
         colors_hold = colors_hold[filterLocs]
         pcd = open3d.geometry.PointCloud()
