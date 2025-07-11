@@ -4,7 +4,7 @@ import cv2
 def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
     print(f'validH before calling getCameraCoordinates: {validH}')
 
-    # create a grid of indices around a point (47x47) centered at (0,0)
+    # create a grid of indices around a point (47x47) centered at (0,0) #???
     charucoCorners[:, 0, [0, 1]] = charucoCorners[:, 0, [1, 0]]
 
     indices = np.indices((47, 47)).reshape(2, -1).T - 23
@@ -22,7 +22,7 @@ def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
                                                                             surroundingPoints[:, 0] >= 0),
                                                              np.logical_and(surroundingPoints[:, 1] < img.shape[1],
                                                                             surroundingPoints[:, 1] >= 0))]
-        print(validV)
+        print(f'{validV=}')
 
         # check if surrounding points are valid (not masked by validV and validH)
         isValid = np.logical_and(validV[surroundingPoints[:, 0], surroundingPoints[:, 1]] == 0,
