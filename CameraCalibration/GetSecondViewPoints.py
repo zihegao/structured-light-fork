@@ -30,8 +30,8 @@ def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
         surroundingPoints = surroundingPoints[isValid]
 
         # get corresponding projector coordinates for valid surrounding points
-        projector_points_u = coordsV[surroundingPoints[:, 0], surroundingPoints[:, 1]]
-        projector_points_v = coordsH[surroundingPoints[:, 0], surroundingPoints[:, 1]]
+        projector_points_u = coordsH[surroundingPoints[:, 0], surroundingPoints[:, 1]]
+        projector_points_v = coordsV[surroundingPoints[:, 0], surroundingPoints[:, 1]]
 
         # highlight these points on the image for visualization
         img[surroundingPoints[:, 0], surroundingPoints[:, 1]] = 255

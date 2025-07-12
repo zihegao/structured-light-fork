@@ -46,8 +46,8 @@ for dirnum in directories_to_use:
     validV = cv2.imread(path+"out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
     validH = cv2.imread(path+"out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
     ### why switched V and H?
-    coordsV = cv2.imread(path+"out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
-    coordsH = cv2.imread(path+"out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
+    coordsV = cv2.imread(path+"out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
+    coordsH = cv2.imread(path+"out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
 
     ######### Aruco marker and Charuco corner detection #########
     # detect Aruco markers
@@ -167,3 +167,20 @@ np.savez("./camera_calibration_out/calculated_cams_matrix.npz",
          roi_proj=roi_proj,
          invCamMtx=invCamMtx,
          invProjMtx=invProjMtx)
+
+print("Camera calibration results:")
+print(f"Camera matrix:\n{cameraMatrix1}")           
+print(f"Distortion coefficients:\n{distCoeffs1}")
+print(f"New camera matrix:\n{newcameramtx_camera}")
+print(f"ROI for camera: {roi_camera}")
+print(f"Camera reprojection error: {rep_err_camera}")  # Added line
+
+print()
+print("Projector calibration results:")
+print(f"Projector matrix:\n{cameraMatrix2}")
+print(f"Distortion coefficients:\n{distCoeffs2}")
+print(f"New projector matrix:\n{newcameramtx_proj}")
+print(f"ROI for projector: {roi_proj}")
+print(f"Projector reprojection error: {rep_err_proj}") 
+
+
