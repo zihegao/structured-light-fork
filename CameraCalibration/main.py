@@ -5,12 +5,13 @@
 import os
 import cv2
 import BoardInfo
+from CalibrationBoard import board
 import numpy as np
 from cv2 import aruco
 from GetSecondViewPoints import getCameraCoordinates
 
 
-# cahnge this based on the number of c_# files
+# change this based on the number of c_# files
 directories_to_use = [i for i in range(6)] #can use data st from last year
 # directories_to_use = [2] #if only using 1 data set, specify with number inside brackets
 
@@ -21,10 +22,10 @@ imgfmt = ".jpg"
 projector_resolution =(1920, 1080)
 
 # storage for calibration points for both camera and projector
-all_charco_corners_camera = []
+all_charuco_corners_camera = []
 all_charco_corners_camera_2 = []
 all_charco_corners_projector = []
-all_charco_ids_camera = []
+all_charuco_ids_camera = []
 all_charco_ids_projector = []
 all_real_points = []
 
@@ -44,29 +45,38 @@ for dirnum in directories_to_use:
     # load Gray code decoded images and validity maps
     validV = cv2.imread(path+"out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
     validH = cv2.imread(path+"out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
+    ### why switched V and H?
     coordsV = cv2.imread(path+"out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
     coordsH = cv2.imread(path+"out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
 
+    ######### Aruco marker and Charuco corner detection #########
     # detect Aruco markers
-    corners, ids, rejected = aruco.detectMarkers(img, BoardInfo.arucoDict)
-    cimg = aruco.drawDetectedMarkers(img.copy(), corners, ids)
+    corners, ids, rejected = aruco.detectMarkers(img, board.getDictionary())
 
+    # try to recover Aruco markers based on board info if they are not directly detected
+    if len(corners) > 0:
+        corners, ids, rejected, recovered = aruco.refineDetectedMarkers(
+            img, board, corners, ids, rejected)
+
+    # optionally visualize detected Aruco markers
+    cimg = aruco.drawDetectedMarkers(img.copy(), corners, ids)
     cv2.imwrite(outPath+"DetectedMarkers.png", cimg)
 
-    # interpolate charuco corners
+    # interpolate ChArUco corners using ArUco markers and board info
     charucoCorners, charucoIds = [], []
     if len(ids) > 0:
-        numCorners, charucoCorners, charucoIds = aruco.interpolateCornersCharuco(corners, ids, img, BoardInfo.charucoBoard)
+        numCorners, charucoCorners, charucoIds = aruco.interpolateCornersCharuco(corners, ids, img, board)
     if charucoIds is None:
-        continue
+        continue # skip this image entirely if no charuco corners are found
 
-    # saves detected corners with IDs
-    all_charco_corners_camera.append(charucoCorners.copy())
-    all_charco_ids_camera.append(charucoIds.copy())
-
-    # visualize and save detected charuco corners
+    # optionally visualize detected charuco corners
     cimg = aruco.drawDetectedCornersCharuco(img.copy(), charucoCorners, charucoIds)
     cv2.imwrite(outPath+"DetectedCorners.png", cimg)
+
+    # saves detected charucocorners and IDs
+    all_charuco_corners_camera.append(charucoCorners.copy())
+    all_charuco_ids_camera.append(charucoIds.copy())
+
 
     # get corresponding projector and filtered camera cordinates
     valid_points, new_points_cam, new_points_projector = getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners)
@@ -89,7 +99,7 @@ for dirnum in directories_to_use:
 camera_resolution = img.shape[:-1]
 
 #CalibrationFlags=cv2.CALIB_ZERO_TANGENT_DIST + cv2.CALIB_FIX_K1 + cv2.CALIB_FIX_K2 + cv2.CALIB_FIX_K3
-rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charco_corners_camera, all_charco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
+rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charuco_corners_camera, all_charuco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
 rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, BoardInfo.charucoBoard, projector_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
 
 #np.savez("../camera_calibration_out/calculated_cams_matrix.npz", rep_err_camera=rep_err_camera, mtx_camera=mtx_camera, dist_camera=dist_camera , rvecs_camera=rvecs_camera, tvecs_camera=tvecs_camera, newcameramtx_camera=newcameramtx_camera, roi_camera=newcameramtx_camera,
@@ -125,7 +135,7 @@ np.savez("./camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
          invProjMtx=invProjMtx)
 
 # repeat calibration *without* distortion fix flags (more flexible, higher potential distortion)
-rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charco_corners_camera, all_charco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None)
+rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charuco_corners_camera, all_charuco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None)
 rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, BoardInfo.charucoBoard, projector_resolution, None, None)
 
 retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
