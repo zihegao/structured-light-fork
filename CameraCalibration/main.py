@@ -1,10 +1,10 @@
-# Camera Calibration using ChArUco Boards and Gray Code Structured Light
-# Detects ChArUco corners in images, maps them to projector coordinates using Gray Code decoding,
+# Camera Calibration using ChArUco Boards and Gray Code (or any) Structured Light
+# Detects ChArUco corners in images, maps them to projector coordinates using Gray Code (or any structured light) decoding,
 # and performs stereo calibration between a camera and a projector. Outputs include intrinsic and extrinsic matrices.
 
 import os
 import cv2
-import BoardInfo
+# import BoardInfo
 from CalibrationBoard import board
 import numpy as np
 from cv2 import aruco
@@ -88,7 +88,7 @@ for dirnum in directories_to_use:
     # saves filtered points for stereo calibration
     all_charco_corners_camera_2.append(new_points_cam)
     print(charucoIds[:, 0])
-    all_real_points.append(BoardInfo.charucoBoard.getChessboardCorners())
+    all_real_points.append(board.getChessboardCorners())
     print(all_real_points)
 
     print(new_points_projector)
@@ -99,8 +99,8 @@ for dirnum in directories_to_use:
 camera_resolution = img.shape[:-1]
 
 #CalibrationFlags=cv2.CALIB_ZERO_TANGENT_DIST + cv2.CALIB_FIX_K1 + cv2.CALIB_FIX_K2 + cv2.CALIB_FIX_K3
-rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charuco_corners_camera, all_charuco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
-rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, BoardInfo.charucoBoard, projector_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
+rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charuco_corners_camera, all_charuco_ids_camera, board, camera_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
+rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, board, projector_resolution, None, None, flags=cv2.CALIB_FIX_K2+cv2.CALIB_FIX_K3+cv2.CALIB_FIX_K4+cv2.CALIB_FIX_K5+cv2.CALIB_FIX_K6)
 
 #np.savez("../camera_calibration_out/calculated_cams_matrix.npz", rep_err_camera=rep_err_camera, mtx_camera=mtx_camera, dist_camera=dist_camera , rvecs_camera=rvecs_camera, tvecs_camera=tvecs_camera, newcameramtx_camera=newcameramtx_camera, roi_camera=newcameramtx_camera,
  #        rep_err_proj=rep_err_proj, mtx_proj=mtx_proj, dist_proj=dist_proj, rvecs_proj=rvecs_proj, tvecs_proj=tvecs_proj, newcameramtx_proj=newcameramtx_proj, roi_proj=newcameramtx_proj)
@@ -135,8 +135,8 @@ np.savez("./camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
          invProjMtx=invProjMtx)
 
 # repeat calibration *without* distortion fix flags (more flexible, higher potential distortion)
-rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charuco_corners_camera, all_charuco_ids_camera, BoardInfo.charucoBoard, camera_resolution, None, None)
-rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, BoardInfo.charucoBoard, projector_resolution, None, None)
+rep_err_camera, mtx_camera, dist_camera, rvecs_camera, tvecs_camera = cv2.aruco.calibrateCameraCharuco(all_charuco_corners_camera, all_charuco_ids_camera, board, camera_resolution, None, None)
+rep_err_proj, mtx_proj, dist_proj, rvecs_proj, tvecs_proj = cv2.aruco.calibrateCameraCharuco(all_charco_corners_projector, all_charco_ids_projector, board, projector_resolution, None, None)
 
 retval, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = \
     cv2.stereoCalibrate(all_real_points, all_charco_corners_camera_2, all_charco_corners_projector,

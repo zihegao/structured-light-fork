@@ -9,16 +9,17 @@ from cv2 import aruco
 
 dpmm = 40 # Dots per millimeter used for scaling
 paper_shape = 216, 279 # US letter paper size in mm
+paper_margin = 10 # margin in mm
 # A4_shape_margin = paper_shape[0]-10, paper_shape[1] - 20  
-outshape = paper_shape[0]*dpmm, paper_shape[1]*dpmm
+outshape = (paper_shape[0]-paper_margin)*dpmm, (paper_shape[1]-paper_margin)*dpmm
 desired_block_size_mm = 30
 desired_aruco_size_mm = 21
-desired_gap_size_mm = 5 #gap between markers of Aruco board
+# desired_gap_size_mm = 5 #gap between markers of Aruco board
  
 blocksx = paper_shape[0]//desired_block_size_mm # Horizontal number of blocks
 blocksy = paper_shape[1]//desired_block_size_mm # Vertical number of blocks
  
-arucoDict = aruco.getPredefinedDictionary(aruco.DICT_4X4_250)
+arucoDict = aruco.getPredefinedDictionary(aruco.DICT_4X4_250) #4x4=16bit maerker dictionary with 250 markers
 
 charucoBoard = aruco.CharucoBoard(
                                          (blocksx, blocksy), # Number of markers in X,Y coordinate system

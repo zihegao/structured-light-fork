@@ -4,18 +4,19 @@ import cv2
 def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
     print(f'validH before calling getCameraCoordinates: {validH}')
 
-    # create a grid of indices around a point (47x47) centered at (0,0) #???
+    # swap coordinates from (u,v) image coordinate to (i,j) matrix coordinate
     charucoCorners[:, 0, [0, 1]] = charucoCorners[:, 0, [1, 0]]
 
+    # for creating a grid of indices around a point (47x47) centered at (0,0)
     indices = np.indices((47, 47)).reshape(2, -1).T - 23
 
     new_points_camera = []
     new_points_projector = []
     valid_points = []
 
-    for pt in charucoCorners:
+    for corner in charucoCorners:
         # find surrounding points in the image around the current corner
-        surroundingPoints = (np.rint(pt[:]) + indices).astype(np.int32)
+        surroundingPoints = (np.rint(corner[:]) + indices).astype(np.int32)
 
         # keep only points inside the image boundaries
         surroundingPoints = surroundingPoints[np.logical_and(np.logical_and(surroundingPoints[:, 0] < img.shape[0],
@@ -44,7 +45,7 @@ def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
             surroundingPoints[:,[0,1]]=surroundingPoints[:,[1,0]]
 
             print(f"Number of surroundingPoints: {len(surroundingPoints)}")
-            print(f"Number of projector_points: {len(projector_points)}")
+            print(f"Number of projector_points: {len(projector_points)}") # these 2 numbers should be the same
 
             # compute homography matrix from camera points to projector points
             H, mask = cv2.findHomography(surroundingPoints, projector_points, ransacReprojThreshold=2, maxIters=100000, method = cv2.FM_LMEDS, confidence=0.99)
@@ -52,11 +53,11 @@ def getCameraCoordinates(img, validV, validH, coordsV, coordsH, charucoCorners):
             print(H is None)
 
             # map the current corner point through the homography to get projector coordinates
-            pt2 = np.dot(H, [pt[0,1], pt[0,0], 1.0])
+            pt2 = np.dot(H, [corner[0,1], corner[0,0], 1.0])
             pt2 /= pt2[2]
             
             #print(pt2, coordsH[int(pt[0,0]), int(pt[0,1])], coordsV[int(pt[0,0]), int(pt[0,1])] )
-            new_points_camera.append([[pt[0,1], pt[0,0]]])
+            new_points_camera.append([[corner[0,1], corner[0,0]]])
             new_points_projector.append([[pt2[0], pt2[1]]])
         else:
             valid_points.append(False)
