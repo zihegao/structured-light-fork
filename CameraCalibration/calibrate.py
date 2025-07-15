@@ -4,8 +4,7 @@
 
 import os
 import cv2
-# import BoardInfo
-from CalibrationBoard import board
+from calibration_board import board
 import numpy as np
 from cv2 import aruco
 from GetSecondViewPoints import getCameraCoordinates
