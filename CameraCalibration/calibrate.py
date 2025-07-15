@@ -3,22 +3,20 @@
 # and performs stereo calibration between a camera and a projector. Outputs include intrinsic and extrinsic matrices.
 
 import os
+import glob
 import cv2
 from calibration_board import board
 import numpy as np
 from cv2 import aruco
 from GetSecondViewPoints import getCameraCoordinates
 
-
-# change this based on the number of c_# files
-directories_to_use = [i for i in range(6)] #can use data st from last year
-# directories_to_use = [2] #if only using 1 data set, specify with number inside brackets
-
-# path template for calibration sets 
-basePath = """./captures/Calib3/c_{0}/"""   
-outPathTemplate = """./camera_calibration_out/Calib3/c_{0}/"""
+# path to calibration data
+data_dir = """./captures/Calib3/"""   
+output_dir = """./camera_calibration_out/"""
 imgfmt = ".jpg"
 projector_resolution =(1920, 1080)
+
+dirnames = sorted(glob.glob(data_dir+"c_*"))
 
 # storage for calibration points for both camera and projector
 all_charuco_corners_camera = []
@@ -29,24 +27,24 @@ all_charco_ids_projector = []
 all_real_points = []
 
 # process each calibration set
-for dirnum in directories_to_use:
-    path = basePath.format(dirnum)
-    outPath = outPathTemplate.format(dirnum)
+for dirname in dirnames:
+    # Construct output path by replacing basePath root with ./camera_calibration_out/ and keeping the rest of the folder structure
+    outPath = os.path.join("./camera_calibration_out", os.path.relpath(dirname, data_dir))
     os.makedirs(outPath, exist_ok=True)
 
     # load reference image
-    img = cv2.imread(path+"w"+imgfmt)
+    img = cv2.imread(dirname+"/w"+imgfmt)
 
     if img is None:
-        print("Skipping: "+path)
+        print("Skipping: "+dirname)
         continue
 
     # load Gray code decoded images and validity maps
-    validV = cv2.imread(path+"out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
-    validH = cv2.imread(path+"out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
+    validV = cv2.imread(dirname+"/out_InvalidImageV.tiff", cv2.IMREAD_GRAYSCALE)
+    validH = cv2.imread(dirname+"/out_InvalidImageH.tiff", cv2.IMREAD_GRAYSCALE)
     ### why switched V and H?
-    coordsV = cv2.imread(path+"out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
-    coordsH = cv2.imread(path+"out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
+    coordsV = cv2.imread(dirname+"/out_BinImageV.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
+    coordsH = cv2.imread(dirname+"/out_BinImageH.tiff", cv2.IMREAD_ANYDEPTH+cv2.IMREAD_GRAYSCALE)
 
     ######### Aruco marker and Charuco corner detection #########
     # detect Aruco markers
@@ -59,7 +57,7 @@ for dirnum in directories_to_use:
 
     # optionally visualize detected Aruco markers
     cimg = aruco.drawDetectedMarkers(img.copy(), corners, ids)
-    cv2.imwrite(outPath+"DetectedMarkers.png", cimg)
+    cv2.imwrite(outPath+"/DetectedMarkers.png", cimg)
 
     # interpolate ChArUco corners using ArUco markers and board info
     charucoCorners, charucoIds = [], []
@@ -70,7 +68,7 @@ for dirnum in directories_to_use:
 
     # optionally visualize detected charuco corners
     cimg = aruco.drawDetectedCornersCharuco(img.copy(), charucoCorners, charucoIds)
-    cv2.imwrite(outPath+"DetectedCorners.png", cimg)
+    cv2.imwrite(outPath+"/DetectedCorners.png", cimg)
 
     # saves detected charucocorners and IDs
     all_charuco_corners_camera.append(charucoCorners.copy())
@@ -116,7 +114,7 @@ invCamMtx = np.linalg.inv(newcameramtx_camera)
 invProjMtx = np.linalg.inv(newcameramtx_proj)
 
 # save less distorted calibration results
-np.savez("./camera_calibration_out/calculated_cams_matrix_less_distortion.npz",
+np.savez(output_dir+"/calculated_cams_matrix_less_distortion.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
          distCoeffs1=distCoeffs1,
@@ -150,7 +148,7 @@ invCamMtx = np.linalg.inv(newcameramtx_camera)
 invProjMtx = np.linalg.inv(newcameramtx_proj)
 
 # save the full (possibly more distorted) calibration result
-np.savez("./camera_calibration_out/calculated_cams_matrix.npz",
+np.savez(output_dir+"/calculated_cams_matrix.npz",
          retval=retval,
          cameraMatrix1=cameraMatrix1,
          distCoeffs1=distCoeffs1,
